@@ -1,0 +1,243 @@
+---
+title: "2018 Playoff Outcomes"
+author: "Tom Kain"
+date: "12/31/2018"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+library(DT)
+library(plyr)
+library(magrittr)
+library(googlesheets)
+library(tidyverse)
+```
+
+Attempting to tabulate all possible outcomes of the 2018 NFL post season bracket, then generate some insights on the results. The outcomes data was put together manually - definitely room for automation.
+
+```{r getdata, message=FALSE}
+
+# https://docs.google.com/spreadsheets/d/14ugu4OiplCVkHfxa8JOokRS5bkFik5fsI43qTq20gVk/edit?usp=sharing
+sheets <- gs_title("2018 NFL Playoff Outcomes")
+
+probabilities <- gs_read(ss = sheets, ws = "Probability Data")
+outcomes_raw <- gs_read(ss = sheets, ws = "Outcomes (Expanded)")
+
+```
+
+I'd like to figure out, for a givoen row in the outcomes_raw data, what is the total probability of that particular occurrence (using the probabilities data). Going to try to count the number of occurrences of each team in a given row, lookup the probability, then multiply them together and add as a row to the original df.
+
+```{r poc}
+ex_row <- outcomes_raw %>%
+  select(-(`Outcome ID`)) %>%
+  slice(1)
+
+(wins_per_team <- ex_row %>%
+  as.character() %>%
+  table() %>%
+  as_tibble() %>%
+  rename(Team = 1)) 
+
+probabilities_with_owner <- probabilities %>%
+  gather(Wins, p, `1 Win`:`4 Wins`) %>%
+  mutate(Wins = as.numeric(str_sub(Wins, 0, 1))) %>%
+  select(-(`Expected Points`))
+
+(probabilities_long <-  probabilities_with_owner %>%
+  select(-Player))
+
+(outcome_p <- wins_per_team %>% 
+  inner_join(probabilities_long, by = c("Team" = "Team", "n" = "Wins")) %>%
+  summarize(p = prod(p)) %>%
+  pull())
+
+
+ex_row %>%
+  mutate(p = outcome_p)
+
+```
+
+Next up - take this proof of concept and apply to all rows of the outcomes data set.
+
+```{r}
+ex_df <- outcomes_raw %>%
+  head(10) %>%
+  select(-1)
+
+get_p <- function(df) {
+  apply(df,1,table) %>%
+  lapply(as_tibble) %>%
+  lapply(left_join, 
+         y = probabilities_long, 
+         by = c("Var1" = "Team", "n" = "Wins")) %>%
+  lapply(summarize, 
+         p = prod(p)) %>%
+  lapply(pull) %>%
+  unlist()
+}
+
+ex_df$p <- ex_df %>% get_p()
+
+ex_df %>%
+  select(1, 12)
+
+```
+
+I would have prefered a more in-line, tidyverse-style solution to this, but looks like this approach at least works! Let's try it for the whole data set.
+
+```{r getp}
+
+outcomes_expanded <- outcomes_raw %>%
+  select(-1)
+
+outcomes_expanded$p <- outcomes_expanded %>%
+  get_p()
+
+outcomes_expanded %>%
+  summarize(p = sum(p))
+```
+
+Hmm - total probability doesn't add up to 1. I'm thinking these "relative" probabilities are probably sufficient for our little bet but I don't know how to approach resolving this, or if it's allowable to simply rescale these probabilities so that they do add to zero. 
+
+Let's press on to see how many points each player would earn in each scenario (1 point per win for each team's owner). 
+
+```{r getpoints}
+
+get_player_points <- function(df) {
+  apply(df,1,table) %>% 
+  lapply(as_tibble) %>%
+  lapply(left_join, 
+         y = probabilities_with_owner, 
+         by = c("Var1" = "Team", "n" = "Wins")) %>%
+  lapply(group_by, Player) %>%
+  lapply(summarize, Wins = sum(n)) %>%
+  lapply(spread, Player, Wins) %>%
+  ldply(data.frame) %>%
+  as_tibble() 
+}
+
+outcomes_expanded_with_points <- outcomes_expanded %>% 
+  select(-p) %>%
+  get_player_points() %>%
+  bind_cols(outcomes_expanded) %>%
+  select(-`N.A`) %>%
+  replace(., is.na(.), 0)
+
+outcomes_expanded_with_points %>%
+  mutate(Dad_total = Dad+2,
+         Tom_total = Tom,
+         Will_total = Will+5) %>%
+  mutate(Winner = 
+           case_when(
+            Dad_total > max(Will_total, Tom_total) ~ "Dad",
+            Will_total > max(Dad_total, Tom_total)  ~ "Will",
+            Tom_total > max(Will_total, Dad_total) ~ "Tom",
+            TRUE ~ "Other"
+            )
+         ) %>%
+  select(Dad, Tom, Will, Dad_total, Tom_total, Will_total, Winner) %>%
+  arrange(desc(Tom)) %>%
+  count(Winner)
+
+```
+
+No idea why the winner category is coming out totally wrong here. Running out of time so did it by hand in google sheets and bringing back
+
+```{r analysisprep}
+sheets <- gs_title("2018 NFL Playoff Outcomes")
+outcomes_analysis_raw <- gs_read(ss = sheets, ws = "Outcomes with Probability, Points")
+
+outcomes_analysis_ties <- outcomes_analysis_raw %>%
+  filter(Winner == "#N/A") %>%
+  mutate(Winner = "Tie")
+
+outcomes_analysis1 <- outcomes_analysis_raw %>%
+  filter(Winner != "#N/A") %>%
+  bind_rows(outcomes_analysis_ties)
+
+# gonna just slide the probabilities so that they add to zero because...
+outcomes_analysis1 %>%
+  summarize(p = sum(p)) %>%
+  pull() -> p_sum
+
+outcomes_analysis1 %>%
+  mutate(p_adj = p * 1/p_sum) -> outcomes_analysis1
+
+outcomes_analysis1 %>%
+  summarize(p = sum(p),
+            p_adj = sum(p_adj))
+
+```
+
+Damn, Will's in a great position to win. 
+
+```{r analysis}
+
+outcome_count <- outcomes_analysis1 %>% nrow()
+
+outcomes_analysis1 %>% 
+  group_by(Winner) %>%
+  summarize(n = n(),
+            perc = n/outcome_count,
+            p = sum(p),
+            p_adj = sum(p_adj)) %>%
+  arrange(desc(n))
+
+outcomes_analysis1 %>%
+  filter(Winner == "Dad") %>%
+  # filter(`NFC Wildcard 1` != 'Cowboys') %>%
+  select(-(Winner:Will)) %>%
+  datatable()
+
+outcomes_analysis1 %>%
+  filter(Winner == "Tom") %>%
+  select(-(Winner:Will)) %>%
+  datatable()
+
+```
+
+Text for email:
+
+Ok, so I went a bit overboard. 
+
+Right now Will is in the lead with Dad 2 back, and I'm 5 back. I took the 538 probabilities/projections for each team's likelihood for winning the various rounds, and I superimposed them against (what I believe is) every possible permutation the bracket could churn out (`r outcome_count`, to be exact). Then, I counted out how many points each of us would win, and tallied up the probabilities for each of these occurrences. 
+
+In short, it doesn't look good for those over 30 in this group. Will is most likely to win this leg of the nassau by a whopping 88% probability across 87% of all possible scenarios. By contrast, I only can win with ~10% of the _remaining_ 140+ outcomes. Even if Will doesn't win, the most likely scenario is a Tie, reeling in about half of the remaining outcomes. All ties go to the banker, obviously. 
+
+In order for Dad to win, there are two games he must have go his way, the rest have wiggle room: Eagles need to beat the Bears, and then the Saints need to beat the Birds (just like he's been saying this whole time). I should probably note that there are only four scenarios in which Dad wins and the Cowboys lose their wild card game. The highest probability outcome for Dad is this, coming in at a whopping .2% probability:
+
+```{r dad}
+
+outcomes_analysis1 %>%
+  filter(Winner == "Dad") %>%
+  arrange(desc(p_adj)) %>%
+  head(1) %>%
+  select(`AFC Wildcard 1`:`Super Bowl`) %>%
+  gather()
+
+```
+
+If Dad's up shit's creek without a paddle, I'm swimming up stream wearing concrete shoes. I have six games that all need to go my way or I'm finding ways to sneak myself hundred dollar bills when you pass go: 
+
+* Texans win their wildcard game
+* Chiefs win their divisional game
+* Seahawks win their wildcard game AND the divisional game
+* Eagles win their wildcard game
+* Saints beat the Eagles
+
+In fact, should the Birds beat the Bears, Will can feel free to root for the Eagles, as every scenario where the Eagles win the Divisional game, Will wins (Will owns quite a few of these scenarios). Here's my best case scenario, and the bracket I'm submitting:
+
+```{r tom}
+outcomes_analysis1 %>%
+  filter(Winner == "Tom") %>%
+  arrange(desc(p_adj)) %>%
+  head(1) %>%
+  select(`AFC Wildcard 1`:`Super Bowl`) %>%
+  gather()
+
+```
+
+Go Seahawks, I guess...

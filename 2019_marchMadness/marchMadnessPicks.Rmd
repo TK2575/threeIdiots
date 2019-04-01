@@ -1,0 +1,155 @@
+---
+title: "March Madness Picks (2019)"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+options(tidyverse.quiet=TRUE)
+library(knitr)
+library(glue)
+library(tidyverse)
+```
+
+```{r data ec}
+picks_raw <- read_csv("data/marchMadnessPicks.csv")
+
+picks <- picks_raw %>%
+  rename_all(str_to_lower) %>%
+  rename(team_pick = pick,
+         seed_pick = seed)
+
+results_raw <- read_csv("data/results.csv") 
+
+results <- results_raw %>% 
+  rename_all(str_to_lower) %>%
+  filter(complete) %>%
+  select(-complete) %>% 
+  rename(team_result = team,
+         seed_result = seed)
+```
+
+```{r}
+picks_with_results <- picks %>%
+  full_join(results, by = c("region", "round", "match")) %>%
+  mutate(win = (team_pick == team_result),
+         points_match = round * seed_pick)
+
+losing_teams <- picks_with_results %>%
+  filter(!win) %>%
+  select(team_pick) %>%
+  unique() %>% 
+  pull()
+
+picks_with_results_na <- picks_with_results %>% 
+  filter(is.na(win)) %>%
+  mutate(win = case_when(
+    team_pick %in% (losing_teams) ~ FALSE,
+    TRUE ~ win
+  ))
+  # filter(team_pick %in% (losing_teams)) %>%
+  # mutate(win = FALSE)
+
+picks_with_results <- picks_with_results %>%
+  filter(!is.na(win)) %>%
+  bind_rows(picks_with_results_na) %>% 
+  mutate(points_won = if_else(win, points_match, 0))
+
+rm(picks_with_results_na)
+
+standings_by_round <- picks_with_results %>%
+  filter(!is.na(win)) %>%
+  group_by(round, player) %>%
+  summarize(wins = sum(win),
+            accuracy = paste0(
+              (wins / n() * 100) %>% round(),
+              "%"),
+            points = sum(points_won),
+            max_points = sum(points_match),
+            efficiency = paste0(
+              (points / max_points * 100) %>% round(),
+              "%")) %>%
+  arrange(points %>% desc())
+
+standings
+            
+standings_overall <- picks_with_results %>%
+  filter(!is.na(win)) %>%
+  group_by(player) %>%
+  summarize(wins = sum(win),
+            accuracy = paste0(
+              (wins / n() * 100) %>% round(),
+              "%"),
+            points = sum(points_won),
+            max_points = sum(points_match),
+            efficiency = paste0(
+              (points / max_points * 100) %>% round(),
+              "%")) %>%
+  arrange(points %>% desc())
+
+```
+
+```{r}
+picks_spread <- picks %>% 
+  mutate(pick = glue("{team_pick} ({seed_pick})")) %>% 
+  select(region:match, pick) %>%
+  spread(player, pick) 
+  
+
+picks_spread_with_results <-
+  picks_with_results %>% 
+  filter(!is.na(win)) %>%
+  mutate(pick = glue("{team_pick} ({seed_pick})"),
+         result = glue("{team_result} ({seed_result})"),
+         points = seed_result * round) %>% 
+  select(region:match, pick, result, points) %>%
+  spread(player, pick)
+```
+
+## Overall Standings
+```{r}
+standings_overall %>%
+  kable()
+```
+
+## Third Round Standings
+```{r}
+standings_by_round %>%
+  filter(round == 3) %>%
+  kable()
+```
+
+## Second Round Standings
+```{r}
+# TODO some analysis specific to round 2?
+
+standings_by_round %>%
+  filter(round == 2) %>%
+  kable()
+
+```
+
+## First Round Standings
+```{r}
+standings_by_round %>%
+  filter(round == 1) %>% 
+  kable()
+```
+
+## Other Analysis
+
+#### First Round - Lone Wolf Picks
+```{r}
+picks_spread_with_results %>%
+  filter(round == 1) %>% 
+  filter(Dad != Tom | Tom != Will | Will != Dad) %>% 
+  mutate(lone_wolf = case_when(
+    Dad == Tom ~ "Will",
+    Dad == Will ~ "Tom",
+    TRUE ~ "Dad"
+  )) %>% 
+  kable()
+```

@@ -1,0 +1,64 @@
+Region,Round,Match,Team,Seed,Complete
+East,1,1,Duke,1,TRUE
+East,1,2,UCF,9,TRUE
+East,1,3,Liberty,12,TRUE
+East,1,4,Virginia Tech,4,TRUE
+East,1,5,Maryland,6,TRUE
+East,1,6,LSU,3,TRUE
+East,1,7,Minnesota,10,TRUE
+East,1,8,Mich. St,2,TRUE
+East,2,1,Duke,1,TRUE
+East,2,2,Virginia Tech,4,TRUE
+East,2,3,LSU,3,TRUE
+East,2,4,Mich St.,2,TRUE
+East,3,1,Duke,1,
+East,3,2,Mich St.,2,
+East,4,1,Duke,1,
+West,1,1,Gonzaga,1,TRUE
+West,1,2,Baylor,9,TRUE
+West,1,3,Murray State,12,TRUE
+West,1,4,Florida State,4,TRUE
+West,1,5,Buffalo,6,TRUE
+West,1,6,Texas Tech,3,TRUE
+West,1,7,Florida,10,TRUE
+West,1,8,Michigan,2,TRUE
+West,2,1,Gonzaga,1,TRUE
+West,2,2,Florida State,4,TRUE
+West,2,3,Texas Tech,3,TRUE
+West,2,4,Michigan,2,TRUE
+West,3,1,Gonzaga,1,TRUE
+West,3,2,Texas Tech,3,TRUE
+West,4,1,Texas Tech,3,
+South,1,1,Virginia,1,TRUE
+South,1,2,Oklahoma,9,TRUE
+South,1,3,Oregon,12,TRUE
+South,1,4,UC Irvine,13,TRUE
+South,1,5,Villanova,6,TRUE
+South,1,6,Purdue,3,TRUE
+South,1,7,Iowa,10,TRUE
+South,1,8,Tennessee,2,TRUE
+South,2,1,Virginia,1,TRUE
+South,2,2,Oregon,12,TRUE
+South,2,3,Purdue,3,TRUE
+South,2,4,Tennessee,2,TRUE
+South,3,1,Virginia,1,TRUE
+South,3,2,Purdue,3,TRUE
+South,4,1,Tennessee,2,
+Midwest,1,1,North Carolina,1,TRUE
+Midwest,1,2,Washington,9,TRUE
+Midwest,1,3,Auburn,5,TRUE
+Midwest,1,4,Kansas,4,TRUE
+Midwest,1,5,Ohio St,11,TRUE
+Midwest,1,6,Houston,3,TRUE
+Midwest,1,7,Wofford,7,TRUE
+Midwest,1,8,Kentucky,2,TRUE
+Midwest,2,1,North Carolina,1,TRUE
+Midwest,2,2,Auburn,5,TRUE
+Midwest,2,3,Houston,3,TRUE
+Midwest,2,4,Kentucky,2,TRUE
+Midwest,3,1,North Carolina,1,
+Midwest,3,2,Kentucky,2,
+Midwest,4,1,North Carolina,1,
+Final Four,5,1,Duke,1,
+Final Four,5,2,Tennessee,2,
+Final Four,6,1,Duke,1,

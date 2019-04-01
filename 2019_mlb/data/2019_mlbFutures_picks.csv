@@ -1,0 +1,16 @@
+Player,Team,Division,Inverted?,proj_538,proj_fangraphs
+Tom,Orioles,AL East,TRUE,60,63
+Will,Astros,AL West,FALSE,98,94
+Dad,Dodgers,NL West,FALSE,95,94
+Dad,Royals,AL Central,TRUE,70,71
+Will,Indians,AL Central,FALSE,95,91
+Tom,Rockies,NL West,FALSE,82,81
+Tom,Twins,AL Central,FALSE,84,82
+Will,Red Sox,AL East,FALSE,95,91
+Dad,Yankees,AL East,FALSE,97,96
+Dad,Cubs,NL Central,FALSE,84,87
+Will,Brewers,NL Central,FALSE,86,83
+Tom,Cardinals,NL Central,FALSE,85,84
+Tom,Angels,AL West,FALSE,80,80
+Will,Giants,NL West,TRUE,71,74
+Dad,A's,AL West,FALSE,83,81
