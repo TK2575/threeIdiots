@@ -24,6 +24,8 @@ picks <- read_csv("data/2019_mlbFutures_picks.csv") %>%
   clean_names() %>% 
   mutate(pick = row_number(),
          round = (pick / 3) %>% ceiling())
+
+colors <- read_csv("data/team_colors.csv")
 ```
 ```{r}
 preseason_proj <- picks %>%
@@ -31,7 +33,8 @@ preseason_proj <- picks %>%
          points_proj = case_when(
            inverted ~ 162 - avg_wins,
            TRUE ~ avg_wins
-         )) 
+         )) %>% 
+  left_join(colors, by = "team")
 ```
 ```{r}
 preseason_proj %>% 
@@ -56,4 +59,11 @@ preseason_proj_by_round %>%
   select(round, Tom:Dad) %>% 
   arrange(round) %>% 
   kable()
+
+preseason_proj %>% 
+  mutate(player = fct_reorder(player, pick)) %>% 
+  mutate(team = fct_reorder(team, points_proj)) %>% 
+  ggplot(aes(x=player,y=points_proj, fill=color1)) + 
+  geom_bar(stat = "identity") +
+  scale_fill_identity()
 ```
