@@ -73,8 +73,6 @@ standings_by_round <- picks_with_results %>%
               (points / max_points * 100) %>% round(),
               "%")) %>%
   arrange(points %>% desc())
-
-standings
             
 standings_overall <- picks_with_results %>%
   filter(!is.na(win)) %>%
