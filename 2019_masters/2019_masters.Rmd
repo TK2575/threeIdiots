@@ -50,12 +50,20 @@ leaderboard_calc <- leaderboard %>%
 ```{r}
 leaderboard_calc %>% 
   filter(!is.na(player)) %>% 
-  group_by(player, inverted) %>% 
-  summarize(total = sum(total),
-            today = sum(today)) %>% 
-  arrange(inverted)
+  arrange(inverted) %>% 
+  select(pos:thru, player, inverted)
 
+# total
 leaderboard_calc %>% 
   filter(!is.na(player)) %>% 
-  arrange(inverted)
+  group_by(player, inverted) %>% 
+  summarize(total = sum(total)) %>% 
+  spread(player, total)
+
+# today
+leaderboard_calc %>% 
+  filter(!is.na(player)) %>% 
+  group_by(player, inverted) %>% 
+  summarize(today = sum(today)) %>% 
+  spread(player, today)
 ```

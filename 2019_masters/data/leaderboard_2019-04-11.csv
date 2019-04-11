@@ -1,88 +1,88 @@
 pos,name,total,thru,today,r1,r2,r3,r4,strokes,player,inverted,pick
-T1,Corey Conners,-2,F,-2,70,0,0,0,70,NA,NA,NA
-T1,Justin Harding,-2,14,-2,54,0,0,0,54,NA,NA,NA
-T1,J.B. Holmes,-2,13,-2,50,0,0,0,50,NA,NA,NA
-T1,Tommy Fleetwood,-2,8,-2,30,0,0,0,30,Dad,FALSE,18
-T1,Gary Woodland,-2,8,-2,30,0,0,0,30,NA,NA,NA
-T1,Patton Kizzire,-2,6,-2,21,0,0,0,21,NA,NA,NA
-T7,Aaron Wise,-1,15,-1,60,0,0,0,60,NA,NA,NA
-T7,Lucas Bjerregaard,-1,12,-1,46,0,0,0,46,NA,NA,NA
-T7,Adam Scott,-1,10,-1,39,0,0,0,39,Dad,FALSE,7
-T7,Marc Leishman,-1,9,-1,35,0,0,0,35,NA,NA,NA
-T7,Jon Rahm,-1,7,-1,26,0,0,0,26,Dad,FALSE,6
-T7,Haotong Li,-1,7,-1,26,0,0,0,26,NA,NA,NA
-T7,Sandy Lyle,-1,7,-1,26,0,0,0,26,NA,NA,NA
-T7,Thorbjorn Olesen,-1,4,-1,15,0,0,0,15,NA,NA,NA
-T7,Kevin Na,-1,4,-1,15,0,0,0,15,Dad,TRUE,13
-T7,Bernhard Langer,-1,3,-1,12,0,0,0,12,NA,NA,NA
-T7,Alex Noren,-1,2,-1,8,0,0,0,8,NA,NA,NA
-T18,Andrew Landry,E,F,E,72,0,0,0,72,NA,NA,NA
-T18,Kevin Tway,E,17,E,68,0,0,0,68,NA,NA,NA
-T18,Keith Mitchell,E,17,E,68,0,0,0,68,NA,NA,NA
-T18,Mike Weir,E,16,E,64,0,0,0,64,NA,NA,NA
-T18,Takumi Kanaya,E,14,E,56,0,0,0,56,NA,NA,NA
-T18,Branden Grace,E,12,E,47,0,0,0,47,NA,NA,NA
-T18,Emiliano Grillo,E,12,E,47,0,0,0,47,NA,NA,NA
-T18,Charles HowellIII,E,11,E,44,0,0,0,44,NA,NA,NA
-T18,Tony Finau,E,10,E,40,0,0,0,40,Tom,FALSE,17
-T18,Henrik Stenson,E,10,E,40,0,0,0,40,Tom,FALSE,11
-T18,Webb Simpson,E,9,E,36,0,0,0,36,NA,NA,NA
-T18,Charley Hoffman,E,9,E,36,0,0,0,36,NA,NA,NA
-T18,Louis Oosthuizen,E,9,E,36,0,0,0,36,NA,NA,NA
-T18,Xander Schauffele,E,8,E,32,0,0,0,32,NA,NA,NA
-T18,Tiger Woods,E,7,E,27,0,0,0,27,Tom,FALSE,5
-T18,Cameron Smith,E,7,E,27,0,0,0,27,NA,NA,NA
-T18,Michael Kim,E,6,E,23,0,0,0,23,NA,NA,NA
-T18,Jimmy Walker,E,5,E,20,0,0,0,20,NA,NA,NA
-T18,Alvaro Ortiz,E,3,E,13,0,0,0,13,NA,NA,NA
-T18,Billy Horschel,E,1,E,4,0,0,0,4,NA,NA,NA
-T18,Shugo Imahira,E,1,E,4,0,0,0,4,NA,NA,NA
-T18,Kiradech Aphibarnrat,E,1,E,4,0,0,0,4,Will,TRUE,15
-T18,Kevin Kisner,E,1,E,4,0,0,0,4,NA,NA,NA
-T41,Brandt Snedeker,+1,14,+1,57,0,0,0,57,NA,NA,NA
-T41,Eddie Pepperell,+1,12,+1,48,0,0,0,48,NA,NA,NA
-T41,Viktor Hovland,+1,9,+1,37,0,0,0,37,NA,NA,NA
-T41,Rickie Fowler,+1,7,+1,28,0,0,0,28,Dad,FALSE,1
-T41,Rory McIlroy,+1,7,+1,28,0,0,0,28,Tom,FALSE,2
-T41,Devon Bling,+1,6,+1,24,0,0,0,24,NA,NA,NA
-T41,Martin Kaymer,+1,6,+1,24,0,0,0,24,NA,NA,NA
-T41,Stewart Cink,+1,5,+1,21,0,0,0,21,NA,NA,NA
-T41,Larry Mize,+1,5,+1,21,0,0,0,21,NA,NA,NA
-T41,Matthew Fitzpatrick,+1,2,+1,10,0,0,0,10,NA,NA,NA
-T41,Keegan Bradley,+1,2,+1,10,0,0,0,10,NA,NA,NA
-T41,Jovan Rebula,+1,1,+1,5,0,0,0,5,NA,NA,NA
-T41,Vijay Singh,+1,1,+1,5,0,0,0,5,NA,NA,NA
-T54,SiWoo Kim,+2,13,+2,54,0,0,0,54,NA,NA,NA
-T54,Sergio Garcia,+2,10,+2,42,0,0,0,42,Tom,TRUE,14
-T54,Kyle Stanley,+2,10,+2,42,0,0,0,42,NA,NA,NA
-T54,Patrick Reed,+2,9,+2,38,0,0,0,38,NA,NA,NA
-T54,Trevor Immelman,+2,6,+2,25,0,0,0,25,NA,NA,NA
-T54,JoseMaria Olazabal,+2,4,+2,18,0,0,0,18,NA,NA,NA
-T54,Matt Wallace,+2,3,+2,15,0,0,0,15,NA,NA,NA
-T61,Adam Long,+3,F,+3,75,0,0,0,75,NA,NA,NA
-T61,Danny Willett,+3,14,+3,59,0,0,0,59,NA,NA,NA
-T61,Charl Schwartzel,+3,11,+3,47,0,0,0,47,NA,NA,NA
-T64,Kevin O'Connell,+4,16,+4,68,0,0,0,68,NA,NA,NA
-T64,Fred Couples,+4,13,+4,56,0,0,0,56,NA,NA,NA
-T64,Hideki Matsuyama,+4,10,+4,44,0,0,0,44,NA,NA,NA
-67,Shane Lowry,+6,16,+6,70,0,0,0,70,NA,NA,NA
-68,Ian Woosnam,+8,17,+8,76,0,0,0,76,NA,NA,NA
-69,Angel Cabrera,+9,15,+9,70,0,0,0,70,NA,NA,NA
-0,Matt Kuchar,0,1:05 pm,0,0,0,0,0,0,NA,NA,NA
-0,Ian Poulter,0,1:05 pm,0,0,0,0,0,0,NA,NA,NA
-0,Zach Johnson,0,1:05 pm,0,0,0,0,0,0,NA,NA,NA
-0,Tyrrell Hatton,0,1:16 pm,0,0,0,0,0,0,NA,NA,NA
-0,Rafa Cabrera-Bello,0,1:16 pm,0,0,0,0,0,0,NA,NA,NA
-0,Francesco Molinari,0,1:16 pm,0,0,0,0,0,0,Dad,FALSE,12
-0,Patrick Cantlay,0,1:27 pm,0,0,0,0,0,0,NA,NA,NA
-0,Bubba Watson,0,1:27 pm,0,0,0,0,0,0,NA,NA,NA
-0,Satoshi Kodaira,0,1:27 pm,0,0,0,0,0,0,NA,NA,NA
-0,Jason Day,0,1:38 pm,0,0,0,0,0,0,NA,NA,NA
-0,Bryson DeChambeau,0,1:38 pm,0,0,0,0,0,0,Will,FALSE,16
-0,Dustin Johnson,0,1:38 pm,0,0,0,0,0,0,Will,FALSE,3
-0,Justin Thomas,0,1:49 pm,0,0,0,0,0,0,Will,FALSE,10
-0,Justin Rose,0,1:49 pm,0,0,0,0,0,0,Will,FALSE,4
-0,Phil Mickelson,0,1:49 pm,0,0,0,0,0,0,NA,NA,NA
-0,Jordan Spieth,0,2:00 pm,0,0,0,0,0,0,Will,FALSE,9
-0,Brooks Koepka,0,2:00 pm,0,0,0,0,0,0,Tom,FALSE,8
-0,Paul Casey,0,2:00 pm,0,0,0,0,0,0,NA,NA,NA
+T1,Justin Harding,-3,F,-3,69,0,0,0,69,NA,NA,NA
+T1,Jon Rahm,-3,13,-3,49,0,0,0,49,Dad,FALSE,6
+T3,Corey Conners,-2,F,-2,70,0,0,0,70,NA,NA,NA
+T3,J.B. Holmes,-2,F,-2,70,0,0,0,70,NA,NA,NA
+T3,Lucas Bjerregaard,-2,F,-2,70,0,0,0,70,NA,NA,NA
+T3,Tony Finau,-2,16,-2,62,0,0,0,62,Tom,FALSE,17
+T3,Louis Oosthuizen,-2,14,-2,54,0,0,0,54,NA,NA,NA
+T3,Gary Woodland,-2,13,-2,50,0,0,0,50,NA,NA,NA
+T3,Tiger Woods,-2,13,-2,50,0,0,0,50,Tom,FALSE,5
+T3,Patton Kizzire,-2,12,-2,45,0,0,0,45,NA,NA,NA
+T3,Thorbjorn Olesen,-2,10,-2,38,0,0,0,38,NA,NA,NA
+T3,Bernhard Langer,-2,9,-2,34,0,0,0,34,NA,NA,NA
+T3,Ian Poulter,-2,6,-2,21,0,0,0,21,NA,NA,NA
+T14,Adam Scott,-1,16,-1,63,0,0,0,63,Dad,FALSE,7
+T14,Webb Simpson,-1,15,-1,60,0,0,0,60,NA,NA,NA
+T14,Xander Schauffele,-1,13,-1,51,0,0,0,51,NA,NA,NA
+T14,Tommy Fleetwood,-1,13,-1,51,0,0,0,51,Dad,FALSE,18
+T14,Haotong Li,-1,13,-1,51,0,0,0,51,NA,NA,NA
+T14,Rickie Fowler,-1,12,-1,46,0,0,0,46,Dad,FALSE,1
+T14,Kevin Na,-1,10,-1,39,0,0,0,39,Dad,TRUE,13
+T14,Billy Horschel,-1,8,-1,31,0,0,0,31,NA,NA,NA
+T14,Matt Kuchar,-1,6,-1,22,0,0,0,22,NA,NA,NA
+T14,Francesco Molinari,-1,6,-1,22,0,0,0,22,Dad,FALSE,12
+T14,Dustin Johnson,-1,4,-1,15,0,0,0,15,Will,FALSE,3
+T14,Bryson DeChambeau,-1,4,-1,15,0,0,0,15,Will,FALSE,16
+T14,Justin Thomas,-1,3,-1,12,0,0,0,12,Will,FALSE,10
+T14,Phil Mickelson,-1,3,-1,12,0,0,0,12,NA,NA,NA
+T14,Brooks Koepka,-1,3,-1,12,0,0,0,12,Tom,FALSE,8
+T29,Andrew Landry,E,F,E,72,0,0,0,72,NA,NA,NA
+T29,Kevin Tway,E,F,E,72,0,0,0,72,NA,NA,NA
+T29,Keith Mitchell,E,F,E,72,0,0,0,72,NA,NA,NA
+T29,Mike Weir,E,F,E,72,0,0,0,72,NA,NA,NA
+T29,Si Woo Kim,E,F,E,72,0,0,0,72,NA,NA,NA
+T29,Emiliano Grillo,E,F,E,72,0,0,0,72,NA,NA,NA
+T29,Branden Grace,E,F,E,72,0,0,0,72,NA,NA,NA
+T29,Charles Howell III,E,17,E,68,0,0,0,68,NA,NA,NA
+T29,Kyle Stanley,E,16,E,64,0,0,0,64,NA,NA,NA
+T29,Patrick Reed,E,15,E,61,0,0,0,61,NA,NA,NA
+T29,Viktor Hovland,E,15,E,61,0,0,0,61,NA,NA,NA
+T29,Marc Leishman,E,14,E,56,0,0,0,56,NA,NA,NA
+T29,Charley Hoffman,E,14,E,56,0,0,0,56,NA,NA,NA
+T29,Sandy Lyle,E,12,E,47,0,0,0,47,NA,NA,NA
+T29,Jimmy Walker,E,10,E,40,0,0,0,40,NA,NA,NA
+T29,Stewart Cink,E,10,E,40,0,0,0,40,NA,NA,NA
+T29,Alvaro Ortiz,E,9,E,36,0,0,0,36,NA,NA,NA
+T29,Tyrrell Hatton,E,6,E,23,0,0,0,23,NA,NA,NA
+T29,Rafa Cabrera-Bello,E,6,E,23,0,0,0,23,NA,NA,NA
+T29,Bubba Watson,E,5,E,20,0,0,0,20,NA,NA,NA
+T29,Jason Day,E,4,E,16,0,0,0,16,NA,NA,NA
+T29,Justin Rose,E,3,E,13,0,0,0,13,Will,FALSE,4
+T51,Takumi Kanaya,+1,F,+1,73,0,0,0,73,NA,NA,NA
+T51,Eddie Pepperell,+1,17,+1,69,0,0,0,69,NA,NA,NA
+T51,Sergio Garcia,+1,16,+1,65,0,0,0,65,Tom,TRUE,14
+T51,Cameron Smith,+1,12,+1,48,0,0,0,48,NA,NA,NA
+T51,Devon Bling,+1,11,+1,45,0,0,0,45,NA,NA,NA
+T51,Larry Mize,+1,10,+1,41,0,0,0,41,NA,NA,NA
+T51,Alex Noren,+1,8,+1,33,0,0,0,33,NA,NA,NA
+T51,Keegan Bradley,+1,9,+1,37,0,0,0,37,NA,NA,NA
+T51,Jovan Rebula,+1,8,+1,33,0,0,0,33,NA,NA,NA
+T51,Kevin Kisner,+1,7,+1,28,0,0,0,28,NA,NA,NA
+T51,Kiradech Aphibarnrat,+1,7,+1,28,0,0,0,28,Will,TRUE,15
+T51,Zach Johnson,+1,6,+1,24,0,0,0,24,NA,NA,NA
+T51,Patrick Cantlay,+1,5,+1,21,0,0,0,21,NA,NA,NA
+T51,Satoshi Kodaira,+1,5,+1,21,0,0,0,21,NA,NA,NA
+T51,Jordan Spieth,+1,3,+1,14,0,0,0,14,Will,FALSE,9
+T66,Henrik Stenson,+2,16,+2,66,0,0,0,66,Tom,FALSE,11
+T66,Rory McIlroy,+2,12,+2,49,0,0,0,49,Tom,FALSE,2
+T66,Michael Kim,+2,12,+2,49,0,0,0,49,NA,NA,NA
+T66,Trevor Immelman,+2,11,+2,46,0,0,0,46,NA,NA,NA
+T66,Martin Kaymer,+2,11,+2,46,0,0,0,46,NA,NA,NA
+T66,Jose Maria Olazabal,+2,10,+2,42,0,0,0,42,NA,NA,NA
+T66,Matthew Fitzpatrick,+2,9,+2,38,0,0,0,38,NA,NA,NA
+T66,Shugo Imahira,+2,7,+2,29,0,0,0,29,NA,NA,NA
+T66,Paul Casey,+2,3,+2,15,0,0,0,15,NA,NA,NA
+T75,Adam Long,+3,F,+3,75,0,0,0,75,NA,NA,NA
+T75,Aaron Wise,+3,F,+3,75,0,0,0,75,NA,NA,NA
+T75,Danny Willett,+3,F,+3,75,0,0,0,75,NA,NA,NA
+T75,Brandt Snedeker,+3,F,+3,75,0,0,0,75,NA,NA,NA
+T75,Hideki Matsuyama,+3,16,+3,67,0,0,0,67,NA,NA,NA
+T80,Charl Schwartzel,+4,17,+4,72,0,0,0,72,NA,NA,NA
+T80,Matt Wallace,+4,9,+4,40,0,0,0,40,NA,NA,NA
+T82,Kevin O'Connell,+5,F,+5,77,0,0,0,77,NA,NA,NA
+T82,Vijay Singh,+5,8,+5,37,0,0,0,37,NA,NA,NA
+T84,Shane Lowry,+6,F,+6,78,0,0,0,78,NA,NA,NA
+T84,Fred Couples,+6,F,+6,78,0,0,0,78,NA,NA,NA
+86,Ian Woosnam,+8,F,+8,80,0,0,0,80,NA,NA,NA
+87,Angel Cabrera,+10,F,+10,82,0,0,0,82,NA,NA,NA
