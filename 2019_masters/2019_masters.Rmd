@@ -30,7 +30,7 @@ url %>%
 leaderboard[3,] -> colnames(leaderboard)
 leaderboard[-(1:3),] %>% 
   clean_names() %>% 
-  rename(strokes = total_2) %>% 
+  rename(strokes = total_2) %>%  
   replace_with_na_all(condition = ~.x == "") -> leaderboard
 
 leaderboard[is.na(leaderboard)] <- 0
@@ -44,14 +44,22 @@ leaderboard %>% write_csv(filename)
 ```{r warning=FALSE}
 leaderboard_calc <- leaderboard %>% 
   mutate(total = if_else(total == "E",0,total %>% as.numeric()),
-         today = if_else(today == "E",0,today %>% as.numeric()))
+         today = if_else(today == "E",0,today %>% as.numeric()),
+         round = ceiling(pick/3))
 ```
 
 ```{r}
+
+leaderboard_calc %>% 
+  filter(!is.na(player)) %>% 
+  group_by(inverted, round) %>% 
+  summarize(total = sum(total)) %>% 
+  arrange(round)
+
 leaderboard_calc %>% 
   filter(!is.na(player)) %>% 
   arrange(inverted) %>% 
-  select(pos:thru, player, inverted)
+  select(pos:thru, player, inverted, round)
 
 # total
 leaderboard_calc %>% 
@@ -60,10 +68,4 @@ leaderboard_calc %>%
   summarize(total = sum(total)) %>% 
   spread(player, total)
 
-# today
-leaderboard_calc %>% 
-  filter(!is.na(player)) %>% 
-  group_by(player, inverted) %>% 
-  summarize(today = sum(today)) %>% 
-  spread(player, today)
 ```
