@@ -29,7 +29,7 @@ sess <- rsDriver(remoteServerAddr = "192.168.99.100",
                  browser = "firefox")
 
 sess$client$navigate(url)
-Sys.sleep(5)
+Sys.sleep(2)
 sess$client$getPageSource()[[1]] -> html_source
 sess$client$close()
 ```
@@ -54,7 +54,8 @@ leaderboard[3,] -> colnames(leaderboard)
 leaderboard[-(1:3),] %>% 
   clean_names() %>% 
   rename(strokes = total_2) %>%  
-  replace_with_na_all(condition = ~.x == "") -> leaderboard
+  replace_with_na_all(condition = ~.x == "") %>% 
+  filter(name != "0", !is.na(name))-> leaderboard
 
 leaderboard[is.na(leaderboard)] <- 0
 
@@ -112,13 +113,14 @@ ggplotly(r1_plot)
 leaderboard_calc %>% 
   filter(!is.na(player)) %>% 
   group_by(inverted, round) %>% 
-  summarize(total = sum(total)) %>% 
+  summarize(today = sum(today),
+            total = sum(total)) %>% 
   arrange(round)
 
 leaderboard_calc %>% 
   filter(!is.na(player)) %>% 
   arrange(inverted) %>% 
-  select(pos:thru, player, inverted, round)
+  select(pos:total, today, thru, player, inverted, round)
 
 leaderboard_calc %>% 
   filter(!is.na(player)) %>% 
