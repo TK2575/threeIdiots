@@ -9,11 +9,38 @@ editor_options:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(tidyverse)
-library(rvest)
 library(janitor)
 library(naniar)
 library(plotly)
+library(tidyverse)
+library(rvest)
+library(RSelenium)
+url <- "http://www.augusta.com/masters/leaderboard"
+```
+
+```{bash engine="sh", eval=FALSE} 
+docker run -d --shm-size=2g -it -p 4445:4444 -p 5901:5900 selenium/standalone-firefox-debug
+```
+
+```{r}
+sess <- rsDriver(remoteServerAddr = "192.168.99.100",
+                 port = 4445L,
+                 verbose = FALSE, 
+                 browser = "firefox")
+
+sess$client$navigate(url)
+Sys.sleep(5)
+sess$client$getPageSource()[[1]] -> html_source
+sess$client$close()
+```
+
+```{r}
+html_source %>% 
+  read_html() %>% 
+  html_nodes("table") %>% 
+  .[[1]] %>% 
+  html_table(fill=TRUE) %>% 
+  as_tibble() -> leaderboard
 ```
 
 
@@ -22,15 +49,6 @@ picks <- read_csv("data/picks.csv") %>%
   clean_names()
 ```
 ```{r}
-
-url <- "http://www.augusta.com/masters/leaderboard"
-
-url %>% 
-  read_html() %>% 
-  html_nodes("table") %>% 
-  .[[1]] %>% 
-  html_table() %>% 
-  as_tibble() -> leaderboard
 
 leaderboard[3,] -> colnames(leaderboard)
 leaderboard[-(1:3),] %>% 
@@ -70,7 +88,8 @@ leaderboard_r1 %>%
 leaderboard_r1 %>% 
   filter(!is.na(player)) %>% 
   arrange(inverted) %>% 
-  select(pos, name, r1, player, inverted, round)
+  select(name, r1, player, inverted, round) %>% 
+  arrange(r1)
 
 leaderboard_r1 %>% 
   filter(!is.na(player)) %>% 
@@ -101,7 +120,6 @@ leaderboard_calc %>%
   arrange(inverted) %>% 
   select(pos:thru, player, inverted, round)
 
-# total
 leaderboard_calc %>% 
   filter(!is.na(player)) %>% 
   group_by(player, inverted) %>% 
