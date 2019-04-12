@@ -13,11 +13,16 @@ library(tidyverse)
 library(rvest)
 library(janitor)
 library(naniar)
+library(plotly)
 ```
 
 
 ```{r}
-picks <- read_csv("data/picks.csv")
+picks <- read_csv("data/picks.csv") %>% 
+  clean_names()
+```
+```{r}
+
 url <- "http://www.augusta.com/masters/leaderboard"
 
 url %>% 
@@ -48,8 +53,43 @@ leaderboard_calc <- leaderboard %>%
          round = ceiling(pick/3))
 ```
 
-```{r}
+## Thursday
 
+```{r}
+leaderboard_r1 <- leaderboard_calc %>%
+  rename(r1_strokes = r1) %>% 
+  mutate(r1_strokes = as.numeric(r1_strokes),
+         r1 = r1_strokes - 72)
+
+leaderboard_r1 %>% 
+  filter(!is.na(player)) %>% 
+  group_by(inverted, round) %>% 
+  summarize(r1 = sum(r1)) %>% 
+  arrange(round)
+
+leaderboard_r1 %>% 
+  filter(!is.na(player)) %>% 
+  arrange(inverted) %>% 
+  select(pos, name, r1, player, inverted, round)
+
+leaderboard_r1 %>% 
+  filter(!is.na(player)) %>% 
+  group_by(player, inverted) %>% 
+  summarize(total = sum(total)) %>% 
+  spread(player, total)
+
+leaderboard_r1 %>% 
+  ggplot(aes(y=r1,x="",color=player)) +
+  geom_jitter(aes(text=name), width=.1) +
+  scale_y_reverse() -> r1_plot
+
+ggplotly(r1_plot)
+  
+```
+
+## Friday
+
+```{r}
 leaderboard_calc %>% 
   filter(!is.na(player)) %>% 
   group_by(inverted, round) %>% 
