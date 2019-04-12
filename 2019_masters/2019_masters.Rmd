@@ -111,6 +111,13 @@ ggplotly(r1_plot)
 
 ```{r}
 leaderboard_calc %>% 
+  ggplot(aes(y=total,x="",color=player)) +
+  geom_jitter(aes(text=name), width=.1) +
+  scale_y_reverse() -> total_plot
+
+ggplotly(total_plot)
+
+leaderboard_calc %>% 
   filter(!is.na(player)) %>% 
   group_by(inverted, round) %>% 
   summarize(today = sum(today),
