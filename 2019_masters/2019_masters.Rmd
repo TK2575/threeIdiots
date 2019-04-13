@@ -15,14 +15,15 @@ library(plotly)
 library(tidyverse)
 library(rvest)
 library(RSelenium)
+library(knitr)
 url <- "http://www.augusta.com/masters/leaderboard"
 ```
 
-```{bash engine="sh", eval=FALSE} 
+```{bash engine="sh", eval=FALSE, include=FALSE} 
 docker run -d --shm-size=2g -it -p 4445:4444 -p 5901:5900 selenium/standalone-firefox-debug
 ```
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 sess <- rsDriver(remoteServerAddr = "192.168.99.100",
                  port = 4445L,
                  verbose = FALSE, 
@@ -34,7 +35,7 @@ sess$client$getPageSource()[[1]] -> html_source
 sess$client$close()
 ```
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 html_source %>% 
   read_html() %>% 
   html_nodes("table") %>% 
@@ -44,13 +45,13 @@ html_source %>%
 ```
 
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 draft_picks <- read_csv("data/picks.csv") %>% 
   clean_names() %>% 
   rename(draft_pick = pick)
 
 ```
-```{r}
+```{r eval=FALSE, include=FALSE}
 
 leaderboard[3,] -> colnames(leaderboard)
 leaderboard[-(1:3),] %>% 
@@ -67,7 +68,9 @@ filename <- paste0("data/leaderboard_",Sys.Date(),".csv")
 leaderboard %>% write_csv(filename)
 ```
 
-```{r warning=FALSE}
+```{r warning=FALSE, include=FALSE}
+leaderboard <- read_csv("data/leaderboard_2019-04-12.csv")
+
 leaderboard_calc <- leaderboard %>% 
   mutate(total = if_else(total == "E",0,total %>% as.numeric()),
          today = if_else(today == "E",0,today %>% as.numeric()),
@@ -76,7 +79,7 @@ leaderboard_calc <- leaderboard %>%
 
 ## Round by round
 
-```{r}
+```{r echo=FALSE, warning=FALSE}
 leaderboard_calc <- leaderboard_calc %>%
   rename(r1_strokes = r1,
          r2_strokes = r2) %>% 
@@ -90,13 +93,24 @@ leaderboard_calc %>%
   group_by(inverted, draft_round) %>% 
   summarize(r1 = sum(r1),
             r2 = sum(r2)) %>% 
-  arrange(draft_round)
+  arrange(draft_round) %>% 
+  kable()
 
 leaderboard_calc %>% 
   filter(!is.na(player)) %>% 
   arrange(inverted) %>% 
   select(name, total, r1:r2, player, inverted, draft_round) %>% 
-  arrange(total)
+  arrange(total) %>% 
+  kable()
+
+leaderboard_calc %>% 
+  filter(!is.na(player)) %>% 
+  group_by(player, inverted) %>% 
+  summarize(r1 = sum(r1),
+            total = sum(total)) %>% 
+  gather(round, score, r1:total) %>% 
+  spread(player, score) 
+  kable()
 
 leaderboard_calc %>%
   gather(round, score, c(r1:r2, total)) %>% 
@@ -106,28 +120,32 @@ leaderboard_calc %>%
 
 ggplotly(rounds_plot)
 
-#TODO animate plot that shows round_to_date progress
+#TODO add round score-to-date columns (currently have isolated daily performance)
+#TODO try animating the score-to-date columns in a plot
 ```
 
 
 
-```{r}
+```{r echo=FALSE}
 leaderboard_calc %>% 
   filter(!is.na(player)) %>% 
   group_by(inverted, draft_round) %>% 
   summarize(today = sum(today),
             total = sum(total)) %>% 
-  arrange(draft_round)
+  arrange(draft_round) %>% 
+  kable()
 
 leaderboard_calc %>% 
   filter(!is.na(player)) %>% 
   arrange(inverted) %>% 
-  select(pos:total, today, thru, player, inverted, draft_round)
+  select(pos:total, today, thru, player, inverted, draft_round) %>% 
+  kable()
 
 leaderboard_calc %>% 
   filter(!is.na(player)) %>% 
   group_by(player, inverted) %>% 
   summarize(total = sum(total)) %>% 
-  spread(player, total)
+  spread(player, total) %>% 
+  kable()
 
 ```
