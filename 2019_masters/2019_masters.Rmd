@@ -14,7 +14,6 @@ library(naniar)
 library(plotly)
 library(tidyverse)
 library(rvest)
-library(RSelenium)
 library(knitr)
 source("R/refresh_leaderboard.R")
 url <- "http://www.augusta.com/masters/leaderboard"
@@ -26,7 +25,6 @@ docker run -d --shm-size=2g -it -p 4445:4444 -p 5901:5900 selenium/standalone-fi
 
 ```{r}
 mode <- "remote"
-
 refresh_leaderboard(mode) -> leaderboard
 
 filename <- paste0("data/leaderboard_",Sys.Date(),".csv")

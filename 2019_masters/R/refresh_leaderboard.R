@@ -1,10 +1,13 @@
+library(tidyverse)
+library(RSelenium)
+
 refresh_leaderboard_remote <- function() {
   sess <- remoteDriver(
     remoteServerAddr = "192.168.0.246",
     port = 4445L,
     browser = "firefox")
   
-  sess$open()
+  sess$open(silent = TRUE)
   sess$navigate(url)
   Sys.sleep(2)
   sess$getPageSource()[[1]] -> html_source
