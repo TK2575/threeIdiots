@@ -8,7 +8,7 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(include=FALSE)
 library(janitor)
 library(naniar)
 library(plotly)
@@ -121,13 +121,13 @@ leaderboard_calc %>%
 
 ```
 
-```{r}
-score_by_draft_and_tourney_round 
-draft_leaderboard_by_round 
-draft_aggregate_by_round 
-score_by_draft_round 
-draft_leaderboard 
-draft_aggregate_score 
+```{r include=TRUE, echo=FALSE}
+score_by_draft_and_tourney_round %>% kable()
+draft_leaderboard_by_round %>% kable()
+draft_aggregate_by_round %>% kable()
+score_by_draft_round %>% kable()
+draft_leaderboard %>% kable()
+draft_aggregate_score %>% kable()
 
 #TODO try animating the score-to-date columns in a plot
 ```
