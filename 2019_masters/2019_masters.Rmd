@@ -37,11 +37,14 @@ leaderboard_calc <- leaderboard %>%
          today = if_else(today == "E",0,today %>% as.numeric()),
          draft_round = ceiling(draft_pick/3)) %>% 
   rename(r1_strokes = r1,
-         r2_strokes = r2) %>% 
+         r2_strokes = r2,
+         r3_strokes = r3) %>% 
   mutate(r1_strokes = as.numeric(r1_strokes),
          r2_strokes = as.numeric(r2_strokes),
+         r3_strokes = as.numeric(r3_strokes),
          r1 = r1_strokes - 72,
-         r2 = r2_strokes - 72)
+         r2 = r2_strokes - 72,
+         r3 = if_else(r3_strokes == 0, total, r3_strokes - 72))
 ```
 
 ```{r}
@@ -49,28 +52,28 @@ leaderboard_calc %>%
   filter(!is.na(player)) %>% 
   group_by(inverted, draft_round) %>% 
   summarize(r1 = sum(r1),
-            r2 = sum(r2)) %>% 
+            r2 = sum(r2),
+            r3 = sum(r3)) %>% 
   arrange(draft_round) -> score_by_draft_and_tourney_round
   
-
 leaderboard_calc %>% 
   filter(!is.na(player)) %>% 
-  arrange(inverted) %>% 
-  select(name, total, r1:r2, player, inverted, draft_round) %>% 
-  arrange(total) -> draft_leaderboard_by_round
-
+  select(pos, name, total, r1, r2, r3, player, inverted, draft_round) %>% 
+  arrange(inverted, total) -> draft_leaderboard_by_round
 
 leaderboard_calc %>% 
   filter(!is.na(player)) %>% 
   group_by(player, inverted) %>% 
   summarize(r1 = sum(r1),
+            r2 = sum(r2),
+            r3 = sum(r3),
             total = sum(total)) %>% 
-  gather(round, score, r1:total) %>% 
+  gather(round, score, r1, r2, r3, total) %>% 
   spread(player, score) -> draft_aggregate_by_round
-  
 
 leaderboard_calc %>%
-  gather(round, score, c(r1:r2, total)) %>% 
+  filter(pos != 'CUT') %>% 
+  gather(round, score, c(r1:r3, total)) %>% 
   ggplot(aes(y=score,x=round,color=player)) +
   geom_jitter(aes(text=name), width=.2, height = 0) +
   scale_y_reverse() -> rounds_plot
