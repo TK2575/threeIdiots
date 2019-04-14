@@ -44,7 +44,13 @@ leaderboard_calc <- leaderboard %>%
          r3_strokes = as.numeric(r3_strokes),
          r1 = r1_strokes - 72,
          r2 = r2_strokes - 72,
-         r3 = if_else(r3_strokes == 0, total, r3_strokes - 72))
+         r3 = if_else(
+           r3_strokes == 0, 
+           total, 
+           r3_strokes - 72),
+         r1_roll = r1,
+         r2_roll = r1 + r2,
+         r3_roll = r2_roll + r3)
 ```
 
 ```{r}
@@ -79,6 +85,15 @@ leaderboard_calc %>%
   scale_y_reverse() -> rounds_plot
 
 ggplotly(rounds_plot)
+
+leaderboard_calc %>% 
+  filter(pos != 'CUT') %>% 
+  gather(round, score, c(r1_roll:r3_roll)) %>% 
+  ggplot(aes(y=score,x=round,color=player)) +
+  geom_jitter(aes(text=name), width=.25, height = 0) +
+  scale_y_reverse() -> rounds_roll_plot
+
+ggplotly(rounds_roll_plot)
 ```
 
 
@@ -114,6 +129,5 @@ score_by_draft_round
 draft_leaderboard 
 draft_aggregate_score 
 
-#TODO add round score-to-date columns (currently have isolated daily performance)
 #TODO try animating the score-to-date columns in a plot
 ```
