@@ -88,7 +88,7 @@ ggplotly(rounds_plot)
 
 leaderboard_calc %>% 
   filter(pos != 'CUT') %>% 
-  gather(round, score, c(r1_roll:r3_roll)) %>% 
+  gather(round, score, c(r1_roll:r3_roll, total)) %>% 
   ggplot(aes(y=score,x=round,color=player)) +
   geom_jitter(aes(text=name), width=.25, height = 0) +
   scale_y_reverse() -> rounds_roll_plot
