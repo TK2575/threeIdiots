@@ -17,6 +17,7 @@ library(tidyverse)
 library(janitor)
 library(knitr)
 library(glue)
+library(baseballr)
 ```
 ## Draft Results and Preseason Projections
 ```{r}
@@ -42,8 +43,7 @@ preseason_proj %>%
          invert_display = if_else(inverted, " (Inverted)", ""),
          team = glue("{team} - {division}{invert_display}")) %>% 
   select(player, round, team) %>% 
-  spread(player, team) %>% 
-  kable()
+  spread(player, team) 
 
 preseason_proj_by_round <- preseason_proj %>% 
   mutate(player = fct_reorder(player, pick)) %>% 
@@ -57,9 +57,24 @@ preseason_proj_by_round %>%
   mutate(round = "Total") %>%
   bind_rows(preseason_proj_by_round) %>% 
   select(round, Tom:Dad) %>% 
-  arrange(round) %>% 
-  kable()
+  arrange(round) 
 
+```
+
+```{r}
+date <- "2019-04-19"
+nl_standings <- standings_on_date_bref(date=date, division = "NL Overall")[[1]] %>% 
+  mutate(league = "NL")
+
+al_standings <- standings_on_date_bref(date=date, division = "AL Overall")[[1]] %>% 
+  mutate(league = "AL")
+
+standings <- nl_standings %>% 
+  bind_rows(al_standings)
+```
+
+```{r}
+# FIXME
 preseason_proj %>% 
   mutate(player = fct_reorder(player, pick)) %>% 
   mutate(team = fct_reorder(team, points_proj)) %>% 
