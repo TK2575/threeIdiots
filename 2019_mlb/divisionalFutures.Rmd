@@ -85,21 +85,33 @@ picks_latest %>%
 ```{r}
 plot_df <- preseason_proj %>% 
   mutate(player = fct_reorder(player, pick)) %>% 
-  mutate(team = fct_reorder(team, points_proj))
+  mutate(team = fct_reorder(team, points_proj)) %>%
+  arrange(desc(points_proj)) %>% 
+  group_by(player) %>% 
+  mutate(pos = cumsum(points_proj) - points_proj/2)
 
-color_v <- plot_df$color1
-names(color_v) <- plot_df$team
+cols <- plot_df$color1
+names(cols) <- plot_df$team
 
+label_cols <- plot_df$color2
+names(label_cols) <- plot_df$team
+
+# FIXME colors getting confused
 plot_df %>% 
-  ggplot(aes(x=player,y=points_proj,fill=team)) +
-  geom_col(position = "stack") +
-  scale_fill_manual(values=color_v)
+  ggplot(aes(x=player,
+             y=points_proj,
+             fill=team)) +
+  geom_col(aes(text = glue("color1 = {color1}; color2 = {color2}")), 
+           position = "stack") +
+  scale_fill_manual(values=cols) +
+  geom_text(aes(x=player,y=pos,label=team,color=team), size=5) +
+  scale_color_manual(values=label_cols) +
+  theme(legend.position="none") -> p
+  
+plotly::ggplotly(p)
 ```
 
 #### To Do
 
-Abstract the plotting so that it can be displayed for current and various projected point totals
-Add text labels, maybe something [like this](https://stackoverflow.com/questions/52434770/r-ggplot-labels-on-stacked-bar-chart), using color2 as the text color (ideally inheriting all colors from the df without need to create separate vector)
-Remove legend (`theme(legend.position="none"))`)
-
-Also, capture weekly standings and trend point totals week by week.
+1. Abstract the plotting so that it can be displayed for current and various projected point totals
+2. Capture weekly standings and trend point totals week by week.
