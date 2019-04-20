@@ -17,7 +17,7 @@ library(tidyverse)
 library(janitor)
 library(knitr)
 library(glue)
-library(baseballr)
+source("R/standings.R")
 ```
 ## Draft Results and Preseason Projections
 ```{r}
@@ -62,15 +62,24 @@ preseason_proj_by_round %>%
 ```
 
 ```{r}
-date <- "2019-04-19"
-nl_standings <- standings_on_date_bref(date=date, division = "NL Overall")[[1]] %>% 
-  mutate(league = "NL")
+standings <- get_standings()
+```
 
-al_standings <- standings_on_date_bref(date=date, division = "AL Overall")[[1]] %>% 
-  mutate(league = "AL")
+```{r}
+picks_latest <- preseason_proj %>% 
+  select(-division) %>% 
+  left_join(standings, by = c("abbrev" = "tm")) %>% 
+  mutate(points = if_else(inverted,l,w),
+         w_pace = ceiling(w_l_percent * 162),
+         l_pace = 162-w_pace,
+         points_pace = if_else(inverted,l_pace,w_pace),
+         w_pyth = ceiling(pyth_w_l_percent * 162),
+         l_pyth = 162-w_pyth,
+         points_pyth = if_else(inverted,l_pyth,w_pyth)) 
 
-standings <- nl_standings %>% 
-  bind_rows(al_standings)
+picks_latest %>% 
+  group_by(player) %>% 
+  summarize_at(vars(points, points_proj, points_pace, points_pyth), sum)
 ```
 
 ```{r}
