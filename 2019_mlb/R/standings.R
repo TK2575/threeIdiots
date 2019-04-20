@@ -27,5 +27,13 @@ get_standings_division <- function(date, from, division) {
     extract2(1) %>% 
     clean_names() %>% 
     as_tibble() %>% 
-    mutate(division = division)
+    mutate(division = division) -> result
+  
+  if (from) {
+    result %>% 
+      mutate(since = date)
+  } else {
+    result %>% 
+      mutate(asOf = date)
+  }
 }

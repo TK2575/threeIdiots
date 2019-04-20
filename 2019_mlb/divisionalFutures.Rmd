@@ -83,11 +83,23 @@ picks_latest %>%
 ```
 
 ```{r}
-# FIXME
-preseason_proj %>% 
+plot_df <- preseason_proj %>% 
   mutate(player = fct_reorder(player, pick)) %>% 
-  mutate(team = fct_reorder(team, points_proj)) %>% 
-  ggplot(aes(x=player,y=points_proj, fill=color1)) + 
-  geom_bar(stat = "identity") +
-  scale_fill_identity()
+  mutate(team = fct_reorder(team, points_proj))
+
+color_v <- plot_df$color1
+names(color_v) <- plot_df$team
+
+plot_df %>% 
+  ggplot(aes(x=player,y=points_proj,fill=team)) +
+  geom_col(position = "stack") +
+  scale_fill_manual(values=color_v)
 ```
+
+#### To Do
+
+Abstract the plotting so that it can be displayed for current and various projected point totals
+Add text labels, maybe something [like this](https://stackoverflow.com/questions/52434770/r-ggplot-labels-on-stacked-bar-chart), using color2 as the text color (ideally inheriting all colors from the df without need to create separate vector)
+Remove legend (`theme(legend.position="none"))`)
+
+Also, capture weekly standings and trend point totals week by week.
