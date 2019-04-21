@@ -62,42 +62,45 @@ preseason_proj_by_round %>%
 ```
 
 ```{r}
-standings <- get_standings()
+weekly_standings <- get_weekly_standings()
 ```
 
 ```{r}
-picks_latest <- preseason_proj %>% 
+picks_trend <- preseason_proj %>% 
   select(-division) %>% 
-  left_join(standings, by = c("abbrev" = "tm")) %>% 
+  left_join(weekly_standings, by = c("abbrev" = "tm")) %>% 
   mutate(points = if_else(inverted,l,w),
-         w_pace = ceiling(w_l_percent * 162),
+         w_pace = round_half_up(w_l_percent * 162),
          l_pace = 162-w_pace,
          points_pace = if_else(inverted,l_pace,w_pace),
-         w_pyth = ceiling(pyth_w_l_percent * 162),
+         w_pyth = round_half_up(pyth_w_l_percent * 162),
          l_pyth = 162-w_pyth,
-         points_pyth = if_else(inverted,l_pyth,w_pyth)) 
+         points_pyth = if_else(inverted,l_pyth,w_pyth))
+
+picks_latest <- picks_trend %>% 
+  filter(as_of == Sys.Date())
 
 picks_latest %>% 
   group_by(player) %>% 
   summarize_at(vars(points, points_proj, points_pace, points_pyth), sum)
 ```
 
-```{r}
-plot_df <- preseason_proj %>% 
+```{r eval=FALSE, include=FALSE}
+preseason_plot_df <- preseason_proj %>% 
   mutate(player = fct_reorder(player, pick)) %>% 
   mutate(team = fct_reorder(team, points_proj)) %>%
   arrange(desc(points_proj)) %>% 
   group_by(player) %>% 
   mutate(pos = cumsum(points_proj) - points_proj/2)
 
-cols <- plot_df$color1
-names(cols) <- plot_df$team
+cols <- preseason_plot_df$color1
+names(cols) <- preseason_plot_df$team
 
-label_cols <- plot_df$color2
-names(label_cols) <- plot_df$team
+label_cols <- preseason_plot_df$color2
+names(label_cols) <- preseason_plot_df$team
 
 # FIXME colors getting confused
-plot_df %>% 
+preseason_plot_df %>% 
   ggplot(aes(x=player,
              y=points_proj,
              fill=team)) +
@@ -106,12 +109,32 @@ plot_df %>%
   scale_fill_manual(values=cols) +
   geom_text(aes(x=player,y=pos,label=team,color=team), size=5) +
   scale_color_manual(values=label_cols) +
-  theme(legend.position="none") -> p
+  theme(legend.position="none") -> preseason_plot
   
-plotly::ggplotly(p)
+plotly::ggplotly(preseason_plot)
+```
+
+```{r}
+trend_summary <- picks_trend %>% 
+  mutate(games = w+l,
+         points_proj_as_of = points_proj / (162/games),
+         points_pyth_as_of = points_pyth / (162/games)) %>% 
+  group_by(as_of, player) %>% 
+  summarize_at(vars(points, points_proj_as_of, points_pyth_as_of, games), sum) %>% 
+  mutate(progress = paste0(round_half_up(games / (162*5)*100),"%"))
+
+trend_summary %>% 
+  ggplot(aes(x=as_of,group=player,color=player)) +
+  geom_line(aes(y=points)) +
+  geom_line(aes(y=points_proj_as_of), linetype="longdash") +
+  geom_line(aes(y=points_pyth_as_of), linetype="dotdash", alpha = .3) +
+  theme(legend.position = "none") +
+  facet_wrap(~ player) -> trend_plot
+
+plotly::ggplotly(trend_plot)
 ```
 
 #### To Do
 
 1. Abstract the plotting so that it can be displayed for current and various projected point totals
-2. Capture weekly standings and trend point totals week by week.
+2. Team-by-team trend visual

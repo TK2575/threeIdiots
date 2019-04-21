@@ -2,6 +2,14 @@ library(baseballr)
 library(tidyverse)
 library(janitor)
 library(magrittr)
+library(purrr)
+
+get_weekly_standings <- function(date=Sys.Date()) {
+  map(.x = sundays(),
+      .f = get_standings,
+      from = FALSE) %>% 
+    bind_rows()
+}
 
 get_standings <- function(date=Sys.Date(), from=FALSE) {
   divisions <- c(
@@ -13,14 +21,14 @@ get_standings <- function(date=Sys.Date(), from=FALSE) {
     "AL West"
   )
   
-  purrr::map(.x = divisions, 
-             .f = get_standings_division, 
-             date = Sys.Date(),
-             from = from) %>% 
+  map(.x = divisions, 
+      .f = get_standings_division, 
+      date = date,
+      from = from) %>% 
     bind_rows()
 }
 
-get_standings_division <- function(date, from, division) {
+get_standings_division <- function(division, date = Sys.Date(), from = FALSE) {
   standings_on_date_bref(date = date, 
                          from = from, 
                          division = division) %>% 
@@ -34,6 +42,20 @@ get_standings_division <- function(date, from, division) {
       mutate(since = date)
   } else {
     result %>% 
-      mutate(asOf = date)
+      mutate(as_of = date)
   }
+}
+
+sundays <- function(thru = Sys.Date()) {
+  rslt <- seq(
+    from=as.Date("2019-03-31"),
+    to=thru,
+    by="1 week"
+  )
+  
+  if (!thru %in% rslt) {
+    rslt <- c(rslt, thru)
+  }
+  
+  rslt
 }
