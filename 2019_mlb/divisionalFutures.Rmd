@@ -9,10 +9,11 @@ editor_options:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-	echo = FALSE,
 	message = FALSE,
-	warning = FALSE
+	warning = FALSE,
+	include = FALSE
 )
+library(plotly)
 library(tidyverse)
 library(janitor)
 library(knitr)
@@ -82,16 +83,17 @@ picks_latest <- picks_trend %>%
 
 picks_latest %>% 
   group_by(player) %>% 
-  summarize_at(vars(points, points_proj, points_pace, points_pyth), sum)
+  summarize_at(vars(points, points_proj, points_pace, points_pyth), sum) -> standings_df
 ```
 
-```{r eval=FALSE, include=FALSE}
+```{r}
 preseason_plot_df <- preseason_proj %>% 
   mutate(player = fct_reorder(player, pick)) %>% 
-  mutate(team = fct_reorder(team, points_proj)) %>%
+  mutate(team = fct_reorder2(team, desc(points_proj), round)) %>%
   arrange(desc(points_proj)) %>% 
   group_by(player) %>% 
-  mutate(pos = cumsum(points_proj) - points_proj/2)
+  mutate(pos = cumsum(points_proj) - points_proj/2) %>% 
+  ungroup()
 
 cols <- preseason_plot_df$color1
 names(cols) <- preseason_plot_df$team
@@ -99,19 +101,12 @@ names(cols) <- preseason_plot_df$team
 label_cols <- preseason_plot_df$color2
 names(label_cols) <- preseason_plot_df$team
 
-# FIXME colors getting confused
 preseason_plot_df %>% 
-  ggplot(aes(x=player,
-             y=points_proj,
-             fill=team)) +
-  geom_col(aes(text = glue("color1 = {color1}; color2 = {color2}")), 
-           position = "stack") +
-  scale_fill_manual(values=cols) +
-  geom_text(aes(x=player,y=pos,label=team,color=team), size=5) +
-  scale_color_manual(values=label_cols) +
-  theme(legend.position="none") -> preseason_plot
-  
-plotly::ggplotly(preseason_plot)
+  ggplot(aes(x=player, y=points_proj, fill=team)) +
+  geom_col(aes(text=team), position = "stack") +
+  scale_fill_manual(values=cols)  -> t
+
+ggplotly(t)
 ```
 
 ```{r}
@@ -127,14 +122,19 @@ trend_summary %>%
   ggplot(aes(x=as_of,group=player,color=player)) +
   geom_line(aes(y=points)) +
   geom_line(aes(y=points_proj_as_of), linetype="longdash") +
-  geom_line(aes(y=points_pyth_as_of), linetype="dotdash", alpha = .3) +
+  geom_line(aes(y=points_pyth_as_of), linetype="dotdash", alpha = .5) +
   theme(legend.position = "none") +
+  labs(y="",x="") +
   facet_wrap(~ player) -> trend_plot
+```
 
-plotly::ggplotly(trend_plot)
+```{r echo=FALSE, include=TRUE}
+standings_df %>% knitr::kable()
+trend_plot
 ```
 
 #### To Do
 
 1. Abstract the plotting so that it can be displayed for current and various projected point totals
 2. Team-by-team trend visual
+3. Some way to look ahead at upcoming matchups, including potential points in play, best case scenarios, etc
