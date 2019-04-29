@@ -138,3 +138,14 @@ trend_plot
 1. Abstract the plotting so that it can be displayed for current and various projected point totals
 2. Team-by-team trend visual
 3. Some way to look ahead at upcoming matchups, including potential points in play, best case scenarios, etc
+
+```{r}
+picks_trend %>% 
+  ggplot(aes(x=as_of,group=team,color=team)) +
+  geom_line(aes(y=points)) +
+  #geom_line(aes(y=points_proj_as_of), linetype="longdash") +
+  #geom_line(aes(y=points_pyth_as_of), linetype="dotdash", alpha = .5) +
+  #theme(legend.position = "none") +
+  labs(y="",x="") +
+  facet_wrap(~ player) 
+```
