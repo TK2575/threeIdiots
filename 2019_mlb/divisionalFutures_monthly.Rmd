@@ -1,0 +1,66 @@
+---
+title: "Monthly Review"
+author: "Tom Kain"
+date: "May 25, 2019"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	message = FALSE,
+	warning = FALSE,
+	include = FALSE
+)
+library(plotly)
+library(tidyverse)
+library(janitor)
+library(knitr)
+library(glue)
+source("R/standings.R")
+```
+
+```{r}
+picks <- read_csv("data/2019_mlbFutures_picks.csv") %>% 
+  clean_names() %>% 
+  mutate(pick = row_number(),
+         round = (pick / 3) %>% ceiling())
+
+preseason_proj <- picks %>%
+  mutate(avg_wins = (proj_538 + proj_fangraphs) / 2,
+         points_proj = case_when(
+           inverted ~ 162 - avg_wins,
+           TRUE ~ avg_wins
+         ))
+
+standings <- get_standings(date = "2019-05-01",from = TRUE)
+```
+
+```{r}
+results <- preseason_proj %>% 
+  select(-division) %>% 
+  left_join(standings, by = c("abbrev" = "tm")) %>% 
+  mutate(win_perc_proj = avg_wins/162, 
+         games = w + l,
+         points = if_else(inverted,l,w),
+         w_pace = round_half_up(w_l_percent * 162),
+         l_pace = 162-w_pace,
+         points_pace = if_else(inverted,l_pace,w_pace),
+         w_pyth = round_half_up(pyth_w_l_percent * 162),
+         l_pyth = 162-w_pyth,
+         points_pyth = if_else(inverted,l_pyth,w_pyth))
+
+results %>% 
+  group_by(player) %>% 
+  summarize(points = sum(points)) %>% 
+  arrange(points %>% desc())
+
+results %>% 
+  mutate(win_perc_gap = round(w_l_percent - win_perc_proj,3),
+         points_exp = win_perc_proj * games,
+         gap = points - points_exp) %>% 
+  arrange(abs(win_perc_gap) %>% desc(), points_exp %>% desc()) %>% 
+  filter(abs(gap) >= 2) %>% 
+  select(player, team, points, games, points_exp, gap, win_perc_gap)
+```
