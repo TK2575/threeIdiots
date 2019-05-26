@@ -37,13 +37,15 @@ preseason_proj <- picks %>%
 standings <- get_standings(date = "2019-05-01",from = TRUE)
 ```
 
-```{r}
+```{r include=TRUE, echo=FALSE}
 results <- preseason_proj %>% 
   select(-division) %>% 
   left_join(standings, by = c("abbrev" = "tm")) %>% 
-  mutate(win_perc_proj = avg_wins/162, 
+  mutate(win_perc_proj = avg_wins/162,
+         point_perc_proj = if_else(inverted,1-win_perc_proj,win_perc_proj),
          games = w + l,
          points = if_else(inverted,l,w),
+         point_perc = points / games,
          w_pace = round_half_up(w_l_percent * 162),
          l_pace = 162-w_pace,
          points_pace = if_else(inverted,l_pace,w_pace),
@@ -54,13 +56,13 @@ results <- preseason_proj %>%
 results %>% 
   group_by(player) %>% 
   summarize(points = sum(points)) %>% 
-  arrange(points %>% desc())
+  arrange(points %>% desc()) %>% kable()
 
 results %>% 
-  mutate(win_perc_gap = round(w_l_percent - win_perc_proj,3),
-         points_exp = win_perc_proj * games,
-         gap = points - points_exp) %>% 
-  arrange(abs(win_perc_gap) %>% desc(), points_exp %>% desc()) %>% 
+  mutate(point_perc_gap = round(point_perc - point_perc_proj,3),
+         points_exp = round(point_perc_proj * games,2),
+         gap = round(points - points_exp,2)) %>% 
+  arrange(abs(point_perc_gap) %>% desc(), points_exp %>% desc()) %>% 
   filter(abs(gap) >= 2) %>% 
-  select(player, team, points, games, points_exp, gap, win_perc_gap)
+  select(player, team, points,  points_exp, gap) %>% kable()
 ```
