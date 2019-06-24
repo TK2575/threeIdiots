@@ -34,7 +34,7 @@ preseason_proj <- picks %>%
            TRUE ~ avg_wins
          ))
 
-standings <- get_standings(date = "2019-05-01",from = TRUE)
+standings <- get_standings(date = "2019-06-01",from = TRUE)
 ```
 
 ```{r include=TRUE, echo=FALSE}
@@ -63,6 +63,6 @@ results %>%
          points_exp = round(point_perc_proj * games,2),
          gap = round(points - points_exp,2)) %>% 
   arrange(abs(point_perc_gap) %>% desc(), points_exp %>% desc()) %>% 
-  filter(abs(gap) >= 2) %>% 
+  #filter(abs(gap) >= 2) %>% 
   select(player, team, points,  points_exp, gap) %>% kable()
 ```
