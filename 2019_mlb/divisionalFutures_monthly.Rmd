@@ -34,7 +34,7 @@ preseason_proj <- picks %>%
            TRUE ~ avg_wins
          ))
 
-standings <- get_standings(date = "2019-06-01",from = TRUE)
+standings <- get_standings(date = "2019-07-01",from = TRUE)
 ```
 
 ```{r include=TRUE, echo=FALSE}
