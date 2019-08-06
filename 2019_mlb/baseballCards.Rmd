@@ -1,15 +1,69 @@
 ---
 title: "Baseball Cards"
 author: "Tom Kain"
-date: "April 19, 2019"
+date: "8/5/2019"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(
+	message = FALSE,
+	warning = FALSE,
+	include = FALSE
+)
 library(tidyverse)
+library(janitor)
+library(knitr)
+library(here)
+library(baseballr)
 ```
 
 ```{r}
-cards_raw <- read_tsv("data/baseball_cards.tsv")
+cards_raw <-
+  here("data", "baseball_cards.tsv") %>% 
+  read_tsv() %>% 
+  clean_names() %>% 
+  mutate(player = as_factor(player),
+         category = as_factor(category))
+```
+
+```{r}
+fg_bat <-
+  fg_bat_leaders(x=2019,y=2019,qual=0) %>% 
+  clean_names() %>% 
+  select(playerid, name, war) %>% 
+  mutate(type = 'batter')
+
+fg_pitch <-
+  fg_pitch_leaders(x=2019,y=2019,qual=0) %>% 
+  clean_names() %>% 
+  select(playerid, name, war) %>% 
+  mutate(type = 'pitcher')
+  
+# Josh James only displays as Joshua on leaderboard?
+fg_pitch$name[fg_pitch$playerid == 16794] <- "Josh James"
+  
+fg_war <-
+  fg_bat %>% 
+  bind_rows(fg_pitch)
+```
+
+```{r}
+active_players <-
+  cards_raw %>% 
+  filter(category == 'active') %>% 
+  left_join(fg_war, "name") %>% 
+  arrange(player, playerid, war %>% desc) %>% 
+  group_by(player, name, playerid) %>% 
+  mutate(rnk = row_number()) %>% 
+  filter(rnk == 1) %>% 
+  ungroup() %>% 
+  select(-rnk)
+
+active_players %>% 
+  group_by(player) %>% 
+  summarize(war = sum(war)) %>% 
+  arrange(war %>% desc)
 ```
