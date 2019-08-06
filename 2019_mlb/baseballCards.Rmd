@@ -62,8 +62,20 @@ active_players <-
   ungroup() %>% 
   select(-rnk)
 
-active_players %>% 
+active_player_results <- 
+  active_players %>% 
   group_by(player) %>% 
   summarize(war = sum(war)) %>% 
   arrange(war %>% desc)
+```
+
+```{r}
+active_player_results %>% kable()
+
+active_players %>% 
+  mutate(name = fct_reorder(name, war %>% desc)) %>% 
+  # FIXME fct_lump??
+  ggplot(aes(x=player, y=war, fill=name, label=name)) +
+  geom_bar(stat = "identity") +
+  geom_text(size = 3, position = position_stack(vjust = 0.5))
 ```
