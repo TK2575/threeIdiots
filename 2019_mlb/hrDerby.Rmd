@@ -43,22 +43,19 @@ derby_sum <- derby %>%
 
 pick_sum <- derby_sum %>% 
   ungroup() %>% 
+  mutate(longest_hr = if_else(max_distance == max(max_distance), 10, 0),
+         derby_winner = if_else(player == 'Pete Alonso', 10, 0)) %>% 
   group_by(pick) %>% 
+  mutate(points = total_hr + longest_hr + derby_winner) %>% 
   summarize(total_hr = sum(total_hr),
             max_distance = max(max_distance),
-            points = round(total_hr / 10, 1)) %>% 
-  filter(!is.na(pick))
-```
-
-```{r adjustments}
-# TODO
-# 1 point for pick who had the longest homer
-# 1 point for winner of derby
-
-
-
+            points = sum(points)) %>% 
+  mutate(points = round(points / 10 , 1)) %>% 
+  filter(!is.na(pick)) %>% 
+  arrange(points %>% desc)
 ```
 
 ```{r}
 derby_sum %>% kable()
 pick_sum %>% kable()
+```

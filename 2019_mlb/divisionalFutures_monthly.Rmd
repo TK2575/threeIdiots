@@ -34,11 +34,31 @@ preseason_proj <- picks %>%
            TRUE ~ avg_wins
          ))
 
-standings <- get_standings(date = "2019-07-01",from = TRUE)
+standings <- get_standings(date = "2019-08-01",from = TRUE)
+standings_sep <- get_standings(date = "2019-09-01",from = TRUE)
+
+standings <-
+  standings_sep %>% 
+  select(tm:l, rs, ra, since) %>% 
+  rename(w_sep = w,
+         l_sep = l,
+         rs_sep = rs,
+         ra_sep = ra,
+         thru = since) %>% 
+  right_join(standings, "tm") %>% 
+  mutate(w = w - w_sep,
+         l = l - l_sep,
+         rs = rs - rs_sep,
+         ra = ra - ra_sep,
+         w_l_percent = w / (w + l),
+         pyth_w_l_percent = rs^1.81/(rs^1.81 + ra^1.81)
+         ) %>% 
+  select(tm, w:since, thru, -gb)
 ```
 
 ```{r include=TRUE, echo=FALSE}
-results <- preseason_proj %>% 
+results <-
+  preseason_proj %>% 
   select(-division) %>% 
   left_join(standings, by = c("abbrev" = "tm")) %>% 
   mutate(win_perc_proj = avg_wins/162,
@@ -53,16 +73,20 @@ results <- preseason_proj %>%
          l_pyth = 162-w_pyth,
          points_pyth = if_else(inverted,l_pyth,w_pyth))
 
-results %>% 
-  group_by(player) %>% 
-  summarize(points = sum(points)) %>% 
-  arrange(points %>% desc()) %>% kable()
-
-results %>% 
+expected_points <- results %>% 
   mutate(point_perc_gap = round(point_perc - point_perc_proj,3),
          points_exp = round(point_perc_proj * games,2),
          gap = round(points - points_exp,2)) %>% 
   arrange(abs(point_perc_gap) %>% desc(), points_exp %>% desc()) %>% 
   #filter(abs(gap) >= 2) %>% 
-  select(player, team, points,  points_exp, gap) %>% kable()
+  select(player, team, points, points_exp, gap)
+
+expected_points %>% kable()
+
+expected_points %>% 
+  group_by(player) %>% 
+  summarize(points = sum(points),
+            points_exp = sum(points_exp),
+            gap = sum(gap)) %>% 
+  arrange(points %>% desc) %>% kable()
 ```
