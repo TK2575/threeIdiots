@@ -1,15 +1,102 @@
 ---
 title: "Baseball Cards"
 author: "Tom Kain"
-date: "April 19, 2019"
+date: "8/5/2019"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(
+	message = FALSE,
+	warning = FALSE,
+	include = FALSE
+)
 library(tidyverse)
+library(janitor)
+library(knitr)
+library(here)
+library(baseballr)
 ```
 
 ```{r}
-cards_raw <- read_tsv("data/baseball_cards.tsv")
+cards_raw <-
+  here("data", "baseball_cards.tsv") %>% 
+  read_tsv() %>% 
+  clean_names() %>% 
+  mutate(player = as_factor(player),
+         category = as_factor(category))
+```
+
+```{r active_players}
+fg_bat <-
+  fg_bat_leaders(x=2019,y=2019,qual=0) %>% 
+  clean_names() %>% 
+  select(playerid, name, war) %>% 
+  mutate(type = 'batter')
+
+fg_pitch <-
+  fg_pitch_leaders(x=2019,y=2019,qual=0) %>% 
+  clean_names() %>% 
+  select(playerid, name, war) %>% 
+  mutate(type = 'pitcher')
+  
+# Josh James only displays as Joshua on leaderboard?
+fg_pitch$name[fg_pitch$playerid == 16794] <- "Josh James"
+  
+fg_war <-
+  fg_bat %>% 
+  bind_rows(fg_pitch)
+
+active_players <-
+  cards_raw %>% 
+  filter(category == 'active') %>% 
+  left_join(fg_war, "name") %>% 
+  arrange(player, playerid, war %>% desc) %>% 
+  group_by(player, name, playerid) %>% 
+  mutate(rnk = row_number()) %>% 
+  filter(rnk == 1) %>% 
+  ungroup() %>% 
+  select(player:category, war)
+```
+
+```{r}
+retired_war <-
+  here("data", "retired_war.csv") %>% 
+  read_csv() %>% 
+  clean_names() %>% 
+  mutate(yearly_war = war / years)
+
+retired <-
+  cards_raw %>% 
+  filter(category == 'retired') %>% 
+  left_join(retired_war, "name") %>% 
+  select(player:category, yearly_war) %>% 
+  rename(war = yearly_war)
+
+war_totals <- active_players %>% 
+  bind_rows(retired)
+  
+```
+
+```{r totals}
+results <- 
+  war_totals %>% 
+  group_by(player) %>% 
+  summarize(war = sum(war),
+            players = n()) %>% 
+  mutate(avg_war = war / players) %>% 
+  arrange(avg_war %>% desc)
+
+results %>% kable()
+
+war_totals %>% 
+  mutate(name = fct_reorder(name, war %>% desc)) %>% 
+  ggplot(aes(x=player, y=war, group = name)) +
+  geom_col(aes(fill = name)) +
+  geom_text(aes(label = name, size = war), 
+            position = position_stack(vjust = 0.5),
+            check_overlap = TRUE) +
+  theme(legend.position = "none")
 ```

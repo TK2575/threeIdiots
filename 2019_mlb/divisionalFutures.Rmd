@@ -87,6 +87,7 @@ picks_latest %>%
 ```
 
 ```{r}
+# TODO lineup with this? https://www.datanovia.com/en/blog/how-to-create-a-ggplot-stacked-bar-chart-2/ or this? https://stackoverflow.com/questions/6644997/showing-data-values-on-stacked-bar-chart-in-ggplot2
 preseason_plot_df <- preseason_proj %>% 
   mutate(player = fct_reorder(player, pick)) %>% 
   mutate(team = fct_reorder2(team, desc(points_proj), round)) %>%
