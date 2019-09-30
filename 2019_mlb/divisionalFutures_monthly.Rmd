@@ -34,26 +34,7 @@ preseason_proj <- picks %>%
            TRUE ~ avg_wins
          ))
 
-standings <- get_standings(date = "2019-08-01",from = TRUE)
-standings_sep <- get_standings(date = "2019-09-01",from = TRUE)
-
-standings <-
-  standings_sep %>% 
-  select(tm:l, rs, ra, since) %>% 
-  rename(w_sep = w,
-         l_sep = l,
-         rs_sep = rs,
-         ra_sep = ra,
-         thru = since) %>% 
-  right_join(standings, "tm") %>% 
-  mutate(w = w - w_sep,
-         l = l - l_sep,
-         rs = rs - rs_sep,
-         ra = ra - ra_sep,
-         w_l_percent = w / (w + l),
-         pyth_w_l_percent = rs^1.81/(rs^1.81 + ra^1.81)
-         ) %>% 
-  select(tm, w:since, thru, -gb)
+standings <- get_standings(date = "2019-09-01",from = TRUE)
 ```
 
 ```{r include=TRUE, echo=FALSE}
@@ -89,4 +70,29 @@ expected_points %>%
             points_exp = sum(points_exp),
             gap = sum(gap)) %>% 
   arrange(points %>% desc) %>% kable()
+```
+
+```{r standings_mid_month, eval=FALSE, include=FALSE}
+# use to get standings for a range of dates
+standings <- get_standings(date = "2019-08-01",from = TRUE)
+standings_sep <- get_standings(date = "2019-09-01",from = TRUE)
+
+standings <-
+  standings_sep %>% 
+  select(tm:l, rs, ra, since) %>% 
+  rename(w_sep = w,
+         l_sep = l,
+         rs_sep = rs,
+         ra_sep = ra,
+         thru = since) %>% 
+  right_join(standings, "tm") %>% 
+  mutate(w = w - w_sep,
+         l = l - l_sep,
+         rs = rs - rs_sep,
+         ra = ra - ra_sep,
+         w_l_percent = w / (w + l),
+         pyth_w_l_percent = rs^1.81/(rs^1.81 + ra^1.81)
+         ) %>% 
+  select(tm, w:since, thru, -gb)
+
 ```

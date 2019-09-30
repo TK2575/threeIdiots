@@ -148,5 +148,7 @@ picks_trend %>%
   #geom_line(aes(y=points_pyth_as_of), linetype="dotdash", alpha = .5) +
   #theme(legend.position = "none") +
   labs(y="",x="") +
-  facet_wrap(~ player) 
+  facet_wrap(~ player) -> team_trend_plot
+
+team_trend_plot %>% plotly::ggplotly()
 ```
