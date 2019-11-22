@@ -1,0 +1,124 @@
+---
+title: "Place Kickers Net PKY"
+author: "Tom Kain"
+date: "11/21/2019"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(nflscrapR)
+library(here)
+```
+
+```{r single_game_test}
+week_1_games <-
+  scrape_game_ids(2019, weeks = 1)
+
+week_1_iggles_game_pbp <-
+  week_1_games %>% 
+  filter(home_team == "PHI") %>% 
+  pull(game_id) %>% 
+  scrape_json_play_by_play()
+
+kick_colnames <-
+  week_1_iggles_game_pbp %>% colnames() %>% 
+  grep("kick", ., value=TRUE)
+
+week_1_iggles_game_pbp %>% colnames()
+
+week_1_iggles_game_pbp %>%
+  filter(extra_point_attempt == 1 | field_goal_attempt == 1) %>% 
+  View()
+
+week_1_iggles_game_pbp %>% 
+  filter(extra_point_attempt == 1 | field_goal_attempt == 1) %>% 
+  select(game_id, posteam, play_type, kicker_player_name, kicker_player_id, extra_point_attempt, extra_point_result, field_goal_attempt, field_goal_result, kick_distance ) %>% 
+  View()
+```
+
+```{r multi_game_practice}
+tst <- 
+  week_1_games %>% 
+  head(2) %>% 
+  pull(game_id) %>% 
+  map(scrape_json_play_by_play)
+
+tst2 <- 
+  week_1_games %>% 
+  head(2) %>% 
+  pull(game_id) %>% 
+  map_df(scrape_json_play_by_play)
+
+tst2 %>% 
+  filter(extra_point_attempt == 1 | field_goal_attempt == 1) %>% 
+  select(game_id, posteam, play_type, kicker_player_name,
+         kicker_player_id, extra_point_attempt, extra_point_result,
+         field_goal_attempt, field_goal_result, kick_distance )
+
+
+```
+
+```{r one_week_kick_results}
+
+scrape_json_kicks <- function(game_id) {
+  if (game_id %>% is.null()) {
+    stop("game_id cannot be null")
+  }
+  
+  print(paste0("Working on game_id ", game_id))
+  
+  nflscrapR::scrape_json_play_by_play(game_id) %>% 
+    filter(extra_point_attempt == 1 | field_goal_attempt == 1) %>% 
+    select(game_id, posteam, play_type, kicker_player_name,
+           kicker_player_id, extra_point_attempt, extra_point_result,
+           field_goal_attempt, field_goal_result, kick_distance)
+}
+
+week_1_kicks <- 
+  week_1_games %>%
+  pull(game_id) %>% 
+  map_df(scrape_json_kicks)
+
+write_csv(week_1_kicks, here("out", "week_01_kicks.csv"))
+```
+
+```{r weeks_1_to_11_kicks}
+
+regular_season_games_2019 <- 
+  scrape_game_ids(2019)
+
+compile_week_kicks <- function(week_num, games_df) {
+  if (week_num %>% is.null()) {
+    stop("week cannot be null")
+  }
+  if (games_df %>% is.null()) {
+    stop("games_df cannot be null")
+  }
+  
+  print(paste0("Working on week ", week_num))
+  
+  result <- 
+    games_df %>% 
+    filter(week == week_num) %>% 
+    pull(game_id) %>% 
+    map_df(scrape_json_kicks)
+  
+  if (week_num %>% nchar() == 1) {
+    week_num <- paste0(0,week_num)
+  }
+  
+  filename <- paste0("week_",week_num,"_kicks.csv")
+  write_csv(result, here("out", filename))
+  
+  result
+  
+}
+
+kicks_weeks_1_thru_11 <- 
+  map_df(1:11, compile_week_kicks, regular_season_games_2019)
+
+```
