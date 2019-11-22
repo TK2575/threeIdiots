@@ -11,7 +11,8 @@ editor_options:
 knitr::opts_chunk$set(
 	message = FALSE,
 	warning = FALSE,
-	include = FALSE
+	include = FALSE,
+	cache = TRUE
 )
 library(tidyverse)
 library(janitor)
@@ -80,7 +81,7 @@ war_totals <- active_players %>%
   
 ```
 
-```{r totals}
+```{r totals, include=TRUE, echo=FALSE}
 results <- 
   war_totals %>% 
   group_by(player) %>% 

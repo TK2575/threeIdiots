@@ -63,7 +63,9 @@ preseason_proj_by_round %>%
 ```
 
 ```{r}
-weekly_standings <- get_weekly_standings()
+# weekly_standings <- get_weekly_standings()
+# write_csv(weekly_standings, "data/2019_weekly_standings.csv")
+weekly_standings <- read_csv("data/2019_weekly_standings.csv")
 ```
 
 ```{r}
@@ -129,10 +131,16 @@ trend_summary %>%
   facet_wrap(~ player) -> trend_plot
 ```
 
-```{r echo=FALSE, include=TRUE}
-standings_df %>% knitr::kable()
-trend_plot
+```{r}
+deltas <- 
+  picks_latest %>% 
+  mutate(proj_delta = floor(points - points_proj),
+         pyth_delta = floor(points - points_pyth)) %>% 
+  select(player, team, points, pyth_delta, proj_delta) %>% 
+  arrange(abs(proj_delta) %>% desc)
 ```
+
+
 
 #### To Do
 
@@ -150,5 +158,16 @@ picks_trend %>%
   labs(y="",x="") +
   facet_wrap(~ player) -> team_trend_plot
 
+team_trend_plot %>% plotly::ggplotly()
+
+```
+
+```{r echo=FALSE, include=TRUE}
+standings_df %>% 
+  mutate(points_proj = ceiling(points_proj)) %>% 
+  select(-points_pace) %>% 
+  knitr::kable()
+deltas %>% knitr::kable()
+trend_plot
 team_trend_plot %>% plotly::ggplotly()
 ```
