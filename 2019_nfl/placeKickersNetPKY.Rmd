@@ -90,7 +90,6 @@ write_csv(week_1_kicks, here("out", "week_01_kicks.csv"))
 
 regular_season_games_2019 <- 
   scrape_game_ids(2019) %>% 
-  regular_season_games_2019 %>% 
   as_tibble()
 
 write_csv(regular_season_games_2019, here("out", "regular_season_games_2019.csv"))
@@ -190,4 +189,55 @@ final_df <-
 
 write_csv(final_df, here("out", "net_pky.csv"))
   
+```
+
+```{r week_12}
+week_12_games_2019 <-
+  regular_season_games_2019 %>% 
+  filter(week == 12,
+         state_of_game == 'POST')
+
+kicks_week_12 <-
+  compile_week_kicks(12, week_12_games_2019)
+
+week_12_kicks_df <-
+  kicks_week_12 %>% 
+  filter(play_type != "no_play") %>% 
+  mutate(
+    game_id = as.character(game_id),
+    kick_distance = case_when(
+      field_goal_result != "made" ~ kick_distance * -1,
+      extra_point_result != "good" ~ kick_distance * -1,
+      TRUE ~ kick_distance),
+    result = if_else(kick_distance >= 0, "make", "miss")) %>% 
+  left_join(week_12_games_2019) %>% 
+  select(week, posteam:kicker_player_name, result, kick_distance)
+
+week_12_net_pky_df <- 
+  week_12_kicks_df %>% 
+  group_by(posteam, kicker_player_name, week) %>% 
+  summarize(net_pky = sum(kick_distance, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  group_by(posteam, kicker_player_name) %>% 
+  summarize(
+    weeks = n_distinct(week),
+    total_net_pky = sum(net_pky),
+    median_net_pky = median(net_pky),
+    min_net_pky = min(net_pky),
+    max_net_pky = max(net_pky)
+  )
+  
+week_12_make_perc_df <- 
+  week_12_kicks_df %>% 
+  mutate(make = result == "make") %>% 
+  group_by(posteam, play_type, kicker_player_name) %>% 
+  summarize(make_perc = sum(make) / n()) %>% 
+  spread(play_type, make_perc) %>% 
+  rename(extra_point_make_perc = extra_point,
+         field_goal_make_perc = field_goal)
+  
+week_12_df <-
+  week_12_net_pky_df %>% 
+  left_join(week_12_make_perc_df, c("posteam", "kicker_player_name")) %>% 
+  arrange(total_net_pky %>% desc)
 ```
