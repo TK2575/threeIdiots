@@ -138,7 +138,8 @@ if (!exists("kicks_weeks_1_thru_11")) {
 if (!exists("regular_season_games_2019")) {
   regular_season_games_2019 <-
     here("out", "regular_season_games_2019.csv") %>% 
-    read_csv()
+    read_csv() %>% 
+    mutate(game_id = game_id %>% as.character())
 }
 
 kicks_weeks_1_thru_11 %>% head(25) %>% View()
@@ -192,10 +193,18 @@ write_csv(final_df, here("out", "net_pky.csv"))
 ```
 
 ```{r week_12}
+
 week_12_games_2019 <-
   regular_season_games_2019 %>% 
   filter(week == 12,
          state_of_game == 'POST')
+
+if (!exists("kicks_week_12")) {
+  kicks_week_12 <- 
+    here("out", "week_12_kicks.csv") %>% 
+    read_csv() %>% 
+    mutate(game_id = game_id %>% as.character())
+}
 
 kicks_week_12 <-
   compile_week_kicks(12, week_12_games_2019)
