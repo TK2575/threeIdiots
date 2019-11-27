@@ -57,9 +57,8 @@ compile_week_kicks <- function(week_num, games_df) {
   
 }
 
-multi_week_summary <- function(multi_week_kick_df) {
-  kicks_df <-
-    multi_week_kick_df %>% 
+simplify_kicks <- function(df) {
+  df %>% 
     filter(play_type != "no_play") %>% 
     mutate(
       game_id = as.character(game_id),
@@ -70,6 +69,12 @@ multi_week_summary <- function(multi_week_kick_df) {
       result = if_else(kick_distance >= 0, "make", "miss")) %>% 
     left_join(regular_season_games_2019) %>% 
     select(week, posteam:kicker_player_name, result, kick_distance)
+}
+
+multi_week_summary <- function(multi_week_kick_df) {
+  kicks_df <-
+    multi_week_kick_df %>% 
+    simplify_kicks()
 
   net_pky_df <- 
     kicks_df %>% 
@@ -150,6 +155,16 @@ weeks_1_thru_11_net_pky <-
 ```
 
 ```{r week_12}
+kicks_week_12 %>% 
+  simplify_kicks() %>%
+  group_by(posteam, kicker_player_name, week) %>% 
+  summarize(net_pky = sum(kick_distance, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  arrange(net_pky %>% desc)
 
-kicks_week_12
+kicks_week_12 %>% 
+  simplify_kicks() %>% 
+  filter(grepl("J.Tucker|G.Zuerlein", kicker_player_name)) %>% 
+  arrange(kicker_player_name, play_type, result)
+  
 ```
