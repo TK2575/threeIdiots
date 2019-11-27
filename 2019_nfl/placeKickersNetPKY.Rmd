@@ -14,56 +14,7 @@ library(nflscrapR)
 library(here)
 ```
 
-```{r single_game_test}
-week_1_games <-
-  scrape_game_ids(2019, weeks = 1)
-
-week_1_iggles_game_pbp <-
-  week_1_games %>% 
-  filter(home_team == "PHI") %>% 
-  pull(game_id) %>% 
-  scrape_json_play_by_play()
-
-kick_colnames <-
-  week_1_iggles_game_pbp %>% colnames() %>% 
-  grep("kick", ., value=TRUE)
-
-week_1_iggles_game_pbp %>% colnames()
-
-week_1_iggles_game_pbp %>%
-  filter(extra_point_attempt == 1 | field_goal_attempt == 1) %>% 
-  View()
-
-week_1_iggles_game_pbp %>% 
-  filter(extra_point_attempt == 1 | field_goal_attempt == 1) %>% 
-  select(game_id, posteam, play_type, kicker_player_name, kicker_player_id, extra_point_attempt, extra_point_result, field_goal_attempt, field_goal_result, kick_distance ) %>% 
-  View()
-```
-
-```{r multi_game_practice}
-tst <- 
-  week_1_games %>% 
-  head(2) %>% 
-  pull(game_id) %>% 
-  map(scrape_json_play_by_play)
-
-tst2 <- 
-  week_1_games %>% 
-  head(2) %>% 
-  pull(game_id) %>% 
-  map_df(scrape_json_play_by_play)
-
-tst2 %>% 
-  filter(extra_point_attempt == 1 | field_goal_attempt == 1) %>% 
-  select(game_id, posteam, play_type, kicker_player_name,
-         kicker_player_id, extra_point_attempt, extra_point_result,
-         field_goal_attempt, field_goal_result, kick_distance )
-
-
-```
-
-```{r one_week_kick_results}
-
+```{r functions}
 scrape_json_kicks <- function(game_id) {
   if (game_id %>% is.null()) {
     stop("game_id cannot be null")
@@ -78,22 +29,6 @@ scrape_json_kicks <- function(game_id) {
            field_goal_attempt, field_goal_result, kick_distance)
 }
 
-week_1_kicks <- 
-  week_1_games %>%
-  pull(game_id) %>% 
-  map_df(scrape_json_kicks)
-
-write_csv(week_1_kicks, here("out", "week_01_kicks.csv"))
-```
-
-```{r weeks_1_to_11_kicks}
-
-regular_season_games_2019 <- 
-  scrape_game_ids(2019) %>% 
-  as_tibble()
-
-write_csv(regular_season_games_2019, here("out", "regular_season_games_2019.csv"))
-
 compile_week_kicks <- function(week_num, games_df) {
   if (week_num %>% is.null()) {
     stop("week cannot be null")
@@ -106,7 +41,8 @@ compile_week_kicks <- function(week_num, games_df) {
   
   result <- 
     games_df %>% 
-    filter(week == week_num) %>% 
+    filter(week == week_num,
+           state_of_game == 'POST') %>% 
     pull(game_id) %>% 
     map_df(scrape_json_kicks)
   
@@ -121,14 +57,69 @@ compile_week_kicks <- function(week_num, games_df) {
   
 }
 
+multi_week_summary <- function(multi_week_kick_df) {
+  kicks_df <-
+    multi_week_kick_df %>% 
+    filter(play_type != "no_play") %>% 
+    mutate(
+      game_id = as.character(game_id),
+      kick_distance = case_when(
+        field_goal_result != "made" ~ kick_distance * -1,
+        extra_point_result != "good" ~ kick_distance * -1,
+        TRUE ~ kick_distance),
+      result = if_else(kick_distance >= 0, "make", "miss")) %>% 
+    left_join(regular_season_games_2019) %>% 
+    select(week, posteam:kicker_player_name, result, kick_distance)
+
+  net_pky_df <- 
+    kicks_df %>% 
+    group_by(posteam, kicker_player_name, week) %>% 
+    summarize(net_pky = sum(kick_distance, na.rm = TRUE)) %>% 
+    ungroup() %>% 
+    group_by(posteam, kicker_player_name) %>% 
+    summarize(
+      weeks = n_distinct(week),
+      total_net_pky = sum(net_pky),
+      median_net_pky = median(net_pky),
+      min_net_pky = min(net_pky),
+      max_net_pky = max(net_pky)
+    )
+  
+  make_perc_df <- 
+    kicks_df %>% 
+    mutate(make = result == "make") %>% 
+    group_by(posteam, play_type, kicker_player_name) %>% 
+    summarize(make_perc = sum(make) / n()) %>% 
+    spread(play_type, make_perc) %>% 
+    rename(extra_point_make_perc = extra_point,
+           field_goal_make_perc = field_goal)
+  
+  net_pky_df %>% 
+    left_join(make_perc_df, c("posteam", "kicker_player_name"))
+}
+```
+
+```{r data_gathering, eval=FALSE}
+regular_season_games_2019 <- 
+  scrape_game_ids(2019) %>% 
+  as_tibble()
+
+write_csv(
+  regular_season_games_2019, 
+  here("out", "regular_season_games_2019.csv"))
+
 kicks_weeks_1_thru_11 <- 
   map_df(1:11, compile_week_kicks, regular_season_games_2019)
 
-write_csv(kicks_weeks_1_thru_11, here("out", "kicks_weeks_01_through_11.csv"))
+write_csv(
+  kicks_weeks_1_thru_11, 
+  here("out", "kicks_weeks_01_through_11.csv"))
 
+kicks_week_12 <-
+  compile_week_kicks(12, regular_season_games_2019)
 ```
 
-```{r summary}
+```{r data_on_disk}
 if (!exists("kicks_weeks_1_thru_11")) {
   kicks_weeks_1_thru_11 <- 
     here("out", "kicks_weeks_01_through_11.csv") %>% 
@@ -142,111 +133,23 @@ if (!exists("regular_season_games_2019")) {
     mutate(game_id = game_id %>% as.character())
 }
 
-kicks_weeks_1_thru_11 %>% head(25) %>% View()
-
-kicks_weeks_1_thru_11 %>% 
-  filter(field_goal_attempt == 1) %>% 
-  count(field_goal_result)
-
-kicks_df <-
-  kicks_weeks_1_thru_11 %>% 
-  filter(play_type != "no_play") %>% 
-  mutate(
-    game_id = as.character(game_id),
-    kick_distance = case_when(
-      field_goal_result != "made" ~ kick_distance * -1,
-      extra_point_result != "good" ~ kick_distance * -1,
-      TRUE ~ kick_distance),
-    result = if_else(kick_distance >= 0, "make", "miss")) %>% 
-  left_join(regular_season_games_2019) %>% 
-  select(week, posteam:kicker_player_name, result, kick_distance)
-
-net_pky_df <- 
-  kicks_df %>% 
-  group_by(posteam, kicker_player_name, week) %>% 
-  summarize(net_pky = sum(kick_distance, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  group_by(posteam, kicker_player_name) %>% 
-  summarize(
-    weeks = n_distinct(week),
-    total_net_pky = sum(net_pky),
-    median_net_pky = median(net_pky),
-    min_net_pky = min(net_pky),
-    max_net_pky = max(net_pky)
-  )
-  
-make_perc_df <- 
-  kicks_df %>% 
-  mutate(make = result == "make") %>% 
-  group_by(posteam, play_type, kicker_player_name) %>% 
-  summarize(make_perc = sum(make) / n()) %>% 
-  spread(play_type, make_perc) %>% 
-  rename(extra_point_make_perc = extra_point,
-         field_goal_make_perc = field_goal)
-  
-final_df <-
-  net_pky_df %>% 
-  left_join(make_perc_df, c("posteam", "kicker_player_name"))
-
-write_csv(final_df, here("out", "net_pky.csv"))
-  
-```
-
-```{r week_12}
-
-week_12_games_2019 <-
-  regular_season_games_2019 %>% 
-  filter(week == 12,
-         state_of_game == 'POST')
-
 if (!exists("kicks_week_12")) {
-  kicks_week_12 <- 
+  kicks_week_12 <-
     here("out", "week_12_kicks.csv") %>% 
     read_csv() %>% 
     mutate(game_id = game_id %>% as.character())
 }
+```
 
-kicks_week_12 <-
-  compile_week_kicks(12, week_12_games_2019)
+```{r summary}
+weeks_1_thru_11_net_pky <-
+  kicks_weeks_1_thru_11 %>% 
+  multi_week_summary()
 
-week_12_kicks_df <-
-  kicks_week_12 %>% 
-  filter(play_type != "no_play") %>% 
-  mutate(
-    game_id = as.character(game_id),
-    kick_distance = case_when(
-      field_goal_result != "made" ~ kick_distance * -1,
-      extra_point_result != "good" ~ kick_distance * -1,
-      TRUE ~ kick_distance),
-    result = if_else(kick_distance >= 0, "make", "miss")) %>% 
-  left_join(week_12_games_2019) %>% 
-  select(week, posteam:kicker_player_name, result, kick_distance)
+# write_csv(weeks_1_thru_11_net_pky, here("out", "net_pky.csv"))
+```
 
-week_12_net_pky_df <- 
-  week_12_kicks_df %>% 
-  group_by(posteam, kicker_player_name, week) %>% 
-  summarize(net_pky = sum(kick_distance, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  group_by(posteam, kicker_player_name) %>% 
-  summarize(
-    weeks = n_distinct(week),
-    total_net_pky = sum(net_pky),
-    median_net_pky = median(net_pky),
-    min_net_pky = min(net_pky),
-    max_net_pky = max(net_pky)
-  )
-  
-week_12_make_perc_df <- 
-  week_12_kicks_df %>% 
-  mutate(make = result == "make") %>% 
-  group_by(posteam, play_type, kicker_player_name) %>% 
-  summarize(make_perc = sum(make) / n()) %>% 
-  spread(play_type, make_perc) %>% 
-  rename(extra_point_make_perc = extra_point,
-         field_goal_make_perc = field_goal)
-  
-week_12_df <-
-  week_12_net_pky_df %>% 
-  left_join(week_12_make_perc_df, c("posteam", "kicker_player_name")) %>% 
-  arrange(total_net_pky %>% desc)
+```{r week_12}
+
+kicks_week_12
 ```
