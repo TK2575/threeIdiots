@@ -1,0 +1,33 @@
+---
+title: "Team Preseason Projections"
+author: "Tom Kain"
+date: "7/21/2020"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(janitor)
+library(plotly)
+```
+
+```{r}
+raw_df <- 
+  here("data_in", "preseason_projections.csv") %>% 
+  read_csv() %>% 
+  clean_names()
+```
+
+```{r}
+plot <- 
+  raw_df %>% 
+  dplyr::filter(division != 'NL East') %>% 
+  ggplot(aes(x=division, y=points, color=division)) +
+  geom_jitter(aes(label=team))
+
+ggplotly(plot)
+```
