@@ -16,18 +16,43 @@ library(plotly)
 ```
 
 ```{r}
-raw_df <- 
+projections <- 
   here("data_in", "preseason_projections.csv") %>% 
   read_csv() %>% 
   clean_names()
 ```
 
 ```{r}
-plot <- 
-  raw_df %>% 
+points_plot <- 
+  projections %>% 
   dplyr::filter(division != 'NL East') %>% 
   ggplot(aes(x=division, y=points, color=division)) +
   geom_jitter(aes(label=team))
 
-ggplotly(plot)
+ggplotly(points_plot)
+
+wins_plot <- 
+  projections %>% 
+  dplyr::filter(division != 'NL East') %>% 
+  ggplot(aes(x=division, y=wins, color=division)) +
+  geom_jitter(aes(label=team))
+
+ggplotly(wins_plot)
+```
+
+```{r}
+
+picks <- 
+  here("data_in", "preseason_picks.csv") %>% 
+  read_csv() %>% 
+  clean_names() %>% 
+  rename(pick = pick_number)
+
+
+picks %>% 
+  left_join(projections, by = c("team","division")) %>% 
+  select(player, team, points)
+  group_by(player) %>% 
+  summarize(points = sum(points)) %>% 
+  arrange(desc(points))
 ```
