@@ -1,0 +1,68 @@
+---
+title: "Midseason Results Tracking"
+author: "Tom Kain"
+date: "8/5/2020"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(janitor)
+library(plotly)
+source("R/standings.R")
+```
+
+```{r}
+
+abbrev_map <-
+  here("data_in", "teamAbbrevationMap.csv") %>% 
+  read_csv() %>% 
+  clean_names()
+
+picks <- 
+  here("data_in", "preseasonPicksWithProjections.csv") %>% 
+  read_csv() %>% 
+  clean_names() %>% 
+  rename(proj_points = points) %>% 
+  left_join(abbrev_map)
+
+standings <- 
+  get_standings() %>% 
+  rename(abbrev = tm) %>% 
+  select(abbrev:w_l_percent, pyth_w_l_percent)
+
+```
+
+```{r}
+number_of_games <- 60
+
+projected_results <-
+  picks %>% 
+  left_join(standings) %>% 
+  mutate(games_played = w+l,
+         points = if_else(inverted,l,w),
+         
+         w_part = round_half_up(w_l_percent * max(games_played)),
+         l_part = max(games_played) - w_part,
+         points_part = if_else(inverted,l_part,w_part),
+         
+         w_wp = round_half_up(w_l_percent * number_of_games),
+         l_lp = number_of_games-w_wp,
+         points_wp = if_else(inverted,l_lp,w_wp),
+         
+         w_pyth = round_half_up(pyth_w_l_percent * number_of_games),
+         l_pyth = number_of_games-w_pyth,
+         points_pyth = if_else(inverted,l_pyth,w_pyth))
+
+
+projected_results %>% 
+  group_by(player) %>% 
+  summarize(points = sum(points),
+            points_part = sum(points_part),
+            points_wp = sum(points_wp),
+            points_pyth = sum(points_pyth))
+```

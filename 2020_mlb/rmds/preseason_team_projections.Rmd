@@ -48,11 +48,22 @@ picks <-
   clean_names() %>% 
   rename(pick = pick_number)
 
-
-picks %>% 
+preseason_picks_with_projections <- 
+  picks %>% 
   left_join(projections, by = c("team","division")) %>% 
   select(player, team, points)
+  
+preseason_picks_with_projections %>% 
   group_by(player) %>% 
   summarize(points = sum(points)) %>% 
   arrange(desc(points))
+
+```
+
+```{r}
+
+picks %>% 
+  left_join(preseason_picks_with_projections, by = c("player", "team")) %>% 
+  write_csv(here("data_in", "preseasonPicksWithProjections.csv"))
+
 ```

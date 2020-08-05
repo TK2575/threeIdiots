@@ -1,0 +1,16 @@
+pick,player,team,inverted,division,points
+1,Dad,Dodgers,FALSE,NL West,37
+2,Will,Yankees,FALSE,AL East,36
+3,Tom,Orioles,TRUE,AL East,39
+4,Will,Astros,FALSE,AL West,36
+5,Tom,Twins,FALSE,AL Central,35
+6,Dad,Reds,FALSE,NL Central,32
+7,Tom,Athletics,FALSE,AL West,32
+8,Dad,Tigers,TRUE,AL Central,36
+9,Will,Indians,FALSE,AL Central,33
+10,Dad,Rays,FALSE,AL East,33
+11,Will,Cubs,FALSE,NL Central,32
+12,Tom,Padres,FALSE,NL West,30
+13,Will,Giants,TRUE,NL West,35
+14,Tom,Brewers,FALSE,NL Central,31
+15,Dad,Angels,FALSE,AL West,31
