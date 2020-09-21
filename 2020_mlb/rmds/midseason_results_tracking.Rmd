@@ -57,6 +57,9 @@ projected_results <-
          pace = points_wp - proj_points)
 
 
+```
+
+```{r}
 projected_results %>% 
   group_by(player) %>% 
   summarize(points = sum(points),
