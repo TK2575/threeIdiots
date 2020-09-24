@@ -72,5 +72,10 @@ projected_results %>%
 projected_results %>% 
   select(pick, player, team, inverted, points_wp, pace) %>% 
   arrange(pace %>% abs() %>% desc) %>% 
-  write_csv(here("data_out", paste0("team_pace-", Sys.Date(), ".csv")))
+ write_csv(here("data_out", paste0("team_pace-", Sys.Date(), ".csv")))
+
+projected_results %>% 
+  select(player, team, inverted, w, l, games_played, points) %>% 
+  arrange(player, points %>% desc) %>% 
+  write_csv(here("data_out", paste0("full_standings-", Sys.Date(), ".csv")))
 ```

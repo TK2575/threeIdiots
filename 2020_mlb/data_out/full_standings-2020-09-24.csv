@@ -1,0 +1,16 @@
+player,team,inverted,w,l,games_played,points
+Dad,Dodgers,FALSE,39,17,56,39
+Dad,Rays,FALSE,37,20,57,37
+Dad,Tigers,TRUE,22,32,54,32
+Dad,Reds,FALSE,29,28,57,29
+Dad,Angels,FALSE,26,31,57,26
+Tom,Twins,FALSE,35,22,57,35
+Tom,Athletics,FALSE,34,21,55,34
+Tom,Padres,FALSE,34,22,56,34
+Tom,Orioles,TRUE,23,33,56,33
+Tom,Brewers,FALSE,27,28,55,27
+Will,Yankees,FALSE,32,24,56,32
+Will,Indians,FALSE,32,24,56,32
+Will,Cubs,FALSE,32,24,56,32
+Will,Astros,FALSE,28,28,56,28
+Will,Giants,TRUE,28,27,55,27

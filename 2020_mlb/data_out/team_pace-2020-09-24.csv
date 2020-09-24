@@ -1,0 +1,16 @@
+pick,player,team,inverted,points_wp,pace
+4,Will,Astros,FALSE,30,-6
+10,Dad,Rays,FALSE,39,6
+12,Tom,Padres,FALSE,36,6
+13,Will,Giants,TRUE,29,-6
+1,Dad,Dodgers,FALSE,42,5
+7,Tom,Athletics,FALSE,37,5
+3,Tom,Orioles,TRUE,35,-4
+15,Dad,Angels,FALSE,27,-4
+2,Will,Yankees,FALSE,34,-2
+5,Tom,Twins,FALSE,37,2
+11,Will,Cubs,FALSE,34,2
+14,Tom,Brewers,FALSE,29,-2
+6,Dad,Reds,FALSE,31,-1
+9,Will,Indians,FALSE,34,1
+8,Dad,Tigers,TRUE,36,0
