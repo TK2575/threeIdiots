@@ -47,6 +47,9 @@ fangraphs_projections <-
   mutate(across(-tm, as.numeric)) %>% 
   select(tm, w, l)
 
+fangraphs_projections %>% 
+  write_csv(here::here("out", "preseason_projections_fangraphs.csv"))
+
 fte_projections <- 
   "https://projects.fivethirtyeight.com/2021-mlb-predictions/" %>% 
   read_html() %>% 
@@ -67,6 +70,10 @@ fte_projections <-
          l = 162 - w) %>% 
   left_join(team_abbreviation_map) %>% 
   select(tm, w, l)
+
+fte_projections %>% 
+  write_csv(here::here("out", 
+                    "preseason_projections_five_thirty_eight.csv"))
   
 
 #TODO tom & Will's projections
