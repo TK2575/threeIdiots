@@ -1,0 +1,98 @@
+---
+title: "Team Preseason Projections"
+author: "Tom Kain"
+date: "7/21/2020"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(janitor)
+library(plotly)
+library(rvest)
+library(xml2)
+```
+
+```{r}
+team_abbreviation_map <-
+  here::here("in", "team_abbrevation_map.csv") %>% 
+  readr::read_csv() %>% 
+  janitor::clean_names()
+
+picks <-
+  here("in", "preseason_picks.csv") %>% 
+  read_csv() %>% 
+  clean_names() %>% 
+  rename(pick = pick_number) %>% 
+  left_join(team_abbreviation_map) %>% 
+  select(-team_name)
+
+fangraphs_projections <-
+  "https://www.fangraphs.com/depthcharts.aspx?position=Standings" %>%
+  read_html() %>%
+  html_nodes("table") %>%
+  html_table() %>%
+  .[[8]] %>%
+  as_tibble() %>%
+  select(1, 16:21) %>%
+  janitor::row_to_names(2) %>%
+  janitor::clean_names() %>% 
+  left_join(team_abbreviation_map) %>% 
+  select(tm, w:ra_g) %>% 
+  rename(wp = w_percent) %>% 
+  mutate(across(-tm, as.numeric)) %>% 
+  select(tm, w, l)
+
+fte_projections <- 
+  "https://projects.fivethirtyeight.com/2021-mlb-predictions/" %>% 
+  read_html() %>% 
+  html_nodes("table") %>% 
+  html_table(fill = TRUE) %>% 
+  .[[1]] %>% 
+  janitor::row_to_names(2) %>% 
+  janitor::clean_names() %>% 
+  select(1, 5) %>% 
+  as_tibble() 
+
+colnames(fte_projections) <- c("team", "record")
+
+fte_projections <- 
+  fte_projections %>% 
+  mutate(team = str_extract(team, "[^0]+"),
+         w = str_extract(record, "[^-]+") %>% as.numeric(),
+         l = 162 - w) %>% 
+  left_join(team_abbreviation_map) %>% 
+  select(tm, w, l)
+  
+
+#TODO tom & Will's projections
+```
+
+```{r}
+
+picks_with_projections <-
+  picks %>% 
+  left_join(fangraphs_projections, by = "tm") %>% 
+  left_join(fte_projections, 
+            by = "tm", 
+            suffix = c("_fangraphs", "_fte")) %>% 
+  mutate(points_fangraphs = if_else(inverted, 
+                                    l_fangraphs, 
+                                    w_fangraphs),
+         points_fte = if_else(inverted, 
+                              l_fte, 
+                              w_fte)) %>% 
+  select(pick, tm, team, player, inverted, points_fangraphs, points_fte)
+  
+picks_with_projections %>% 
+  write_csv(here::here("out", "picks_with_projections.csv"))
+
+picks_with_projections %>% 
+  group_by(player) %>% 
+  summarize(points_fangraphs = sum(points_fangraphs),
+            points_fte = sum(points_fte))
+```
