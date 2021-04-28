@@ -6,7 +6,7 @@ Pick Number,Player,Team,Inverted,Division
 5,Tom,Pirates,TRUE,NL Central
 6,Dad,Tigers,TRUE,AL Central
 7,Tom,Astros,FALSE,AL West
-8,Dad,Cardinals,TRUE,NL Central
+8,Dad,Cardinals,FALSE,NL Central
 9,Will,Twins,FALSE,AL Central
 10,Dad,Rays,FALSE,AL East
 11,Will,Athletics,FALSE,AL West
