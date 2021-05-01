@@ -1,0 +1,16 @@
+player,team,round,inverted,w,l,games_played,points,pace_wp,pace_pyth
+Dad,Tigers,2,TRUE,8,19,27,19,114,119
+Dad,Padres,1,FALSE,15,12,27,15,90,92
+Dad,Cardinals,3,FALSE,14,12,26,14,87,87
+Dad,Rays,4,FALSE,13,14,27,13,78,75
+Dad,Angels,5,FALSE,12,12,24,12,81,71
+Tom,Giants,5,FALSE,16,10,26,16,100,99
+Tom,Astros,3,FALSE,14,12,26,14,87,98
+Tom,White Sox,4,FALSE,14,11,25,14,91,98
+Tom,Pirates,2,TRUE,12,13,25,13,84,91
+Tom,Yankees,1,FALSE,12,14,26,12,75,86
+Will,Dodgers,1,FALSE,16,11,27,16,96,102
+Will,Athletics,4,FALSE,16,11,27,16,96,81
+Will,Blue Jays,2,FALSE,12,12,24,12,81,92
+Will,Brewers,5,TRUE,16,10,26,10,62,72
+Will,Twins,3,FALSE,9,15,24,9,61,79
