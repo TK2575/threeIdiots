@@ -1,0 +1,16 @@
+Pick Number,Player,Team,Inverted,Division
+1,Dad,Dodgers,FALSE,NL West
+2,Tom,Blue Jays,FALSE,AL East
+3,Will,Yankees,FALSE,AL East
+4,Will,Astros,FALSE,AL West
+5,Tom,Padres,False,NL West
+6,Dad,Brewers,False,NL Central
+7,Dad,Orioles,TRUE,AL East
+8,Tom,Pirates,TRUE,NL Central
+9,Will,White Sox,FALSE,AL Central
+10,Will,Cardinals,FALSE,NL Central
+11,Tom,Angels,FALSE,AL West
+12,Dad,Twins,FALSE,AL Central
+13,Dad,Mariners,FALSE,AL West
+14,Tom,Guardians,FALSE,AL Central
+15,Will,Rockies,TRUE,NL West
