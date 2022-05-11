@@ -37,6 +37,18 @@ fangraphs_projections <-
   clean_names() %>% 
   mutate(l = 162-w)
   
+fte_projections <-
+  here("in", "preseason_projections_five_thirty_eight.csv") %>% 
+  read_csv() %>% 
+  clean_names() %>% 
+  mutate(l = 162-w)
+
+# r-peta-ball projections
+rpb_projections <-
+  here("in", "preseason_projections_r_peta_ball.csv") %>% 
+  read_csv() %>% 
+  clean_names() %>% 
+  select(tm,w,l)
 
 # missed grabbing these preseason, these are adjusted during the season
 # fangraphs_projections <-
@@ -57,34 +69,33 @@ fangraphs_projections <-
 # 
 # fangraphs_projections %>% 
 #   write_csv(here::here("out", "preseason_projections_fangraphs.csv"))
+# 
+# fte_projections <- 
+#   "https://projects.fivethirtyeight.com/2022-mlb-predictions/" %>% 
+#   read_html() %>% 
+#   html_nodes("table") %>% 
+#   html_table(fill = TRUE) %>% 
+#   .[[1]] %>% 
+#   janitor::row_to_names(2) %>% 
+#   janitor::clean_names() %>% 
+#   select(1, 5) %>% 
+#   as_tibble() 
+# 
+# colnames(fte_projections) <- c("team", "record")
+# 
+# fte_projections <- 
+#   fte_projections %>% 
+#   mutate(team = str_extract(team, "[a-zA-z]+"), # not perfect
+#          w = str_extract(record, "[^-]+") %>% as.numeric(),
+#          l = 162 - w) %>% 
+#   left_join(team_abbreviation_map) %>% 
+#   select(tm, w, l)
+# 
+# fte_projections %>% 
+#   write_csv(here::here("out", 
+#                     "preseason_projections_five_thirty_eight.csv"))
 
-fte_projections <- 
-  "https://projects.fivethirtyeight.com/2022-mlb-predictions/" %>% 
-  read_html() %>% 
-  html_nodes("table") %>% 
-  html_table(fill = TRUE) %>% 
-  .[[1]] %>% 
-  janitor::row_to_names(2) %>% 
-  janitor::clean_names() %>% 
-  select(1, 5) %>% 
-  as_tibble() 
 
-colnames(fte_projections) <- c("team", "record")
-
-fte_projections <- 
-  fte_projections %>% 
-  mutate(team = str_extract(team, "[a-zA-z]+"), # not perfect
-         w = str_extract(record, "[^-]+") %>% as.numeric(),
-         l = 162 - w) %>% 
-  left_join(team_abbreviation_map) %>% 
-  select(tm, w, l)
-
-fte_projections %>% 
-  write_csv(here::here("out", 
-                    "preseason_projections_five_thirty_eight.csv"))
-  
-
-#TODO tom & Will's projections
 ```
 
 ```{r}
@@ -95,19 +106,29 @@ picks_with_projections <-
   left_join(fte_projections, 
             by = "tm", 
             suffix = c("_fangraphs", "_fte")) %>% 
-  mutate(points_fangraphs = if_else(inverted, 
+  left_join(rpb_projections,
+            by = "tm") %>% 
+  mutate(w_rpb = w,
+         l_rpb = l,
+         points_fangraphs = if_else(inverted, 
                                     l_fangraphs, 
                                     w_fangraphs),
          points_fte = if_else(inverted, 
                               l_fte, 
-                              w_fte)) %>% 
-  select(pick, tm, team, player, inverted, points_fangraphs, points_fte)
+                              w_fte),
+         points_rpb = if_else(inverted,
+                              l_rpb,
+                              w_rpb)) %>% 
+  select(pick, tm, team, player, inverted, points_fangraphs, points_fte, points_rpb) %>% 
+  mutate(points_consensus = round((points_fangraphs+points_fte+points_rpb)/3,0))
   
 picks_with_projections %>% 
   write_csv(here::here("out", "picks_with_projections.csv"))
 
 picks_with_projections %>% 
   group_by(player) %>% 
-  summarize(points_fangraphs = sum(points_fangraphs),
-            points_fte = sum(points_fte))
+  summarize(points_consensus = sum(points_consensus),
+            points_fangraphs = sum(points_fangraphs),
+            points_fte = sum(points_fte),
+            points_rpb = sum(points_rpb))
 ```

@@ -1,0 +1,16 @@
+pick,tm,team,player,inverted,points_fangraphs,points_fte,points_rpb,points_consensus
+1,LAD,Dodgers,Dad,FALSE,94,99,104,99
+2,TOR,Blue Jays,Tom,FALSE,92,92,99,94
+3,NYY,Yankees,Will,FALSE,91,92,96,93
+4,HOU,Astros,Will,FALSE,89,92,97,93
+5,SDP,Padres,Tom,FALSE,89,87,93,90
+6,MIL,Brewers,Dad,FALSE,88,91,79,86
+7,BAL,Orioles,Dad,TRUE,97,100,96,98
+8,PIT,Pirates,Tom,TRUE,93,95,94,94
+9,CHW,White Sox,Will,FALSE,86,91,81,86
+10,STL,Cardinals,Will,FALSE,81,81,80,81
+11,LAA,Angels,Tom,FALSE,83,84,75,81
+12,MIN,Twins,Dad,FALSE,82,83,83,83
+13,SEA,Mariners,Dad,FALSE,80,80,78,79
+14,CLE,Guardians,Tom,FALSE,77,78,87,81
+15,COL,Rockies,Will,TRUE,93,91,103,96
