@@ -7,8 +7,7 @@ get_espn_leaderboard <- function() {
   "https://www.espn.com/golf/leaderboard" %>% 
     read_html() %>% 
     html_element(".Table") %>% 
-    html_table() %>% 
-    dplyr::select(-1) %>% 
-    janitor::clean_names()
-
+    html_table() %>%
+    janitor::clean_names() %>% 
+    dplyr::select(-1)
 }

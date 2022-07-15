@@ -1,0 +1,20 @@
+---
+title: "2022 Open Results Tracking"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(include = FALSE)
+source("pool_bets.R")
+```
+
+```{r echo=FALSE}
+bettor_leaderboard <- bettor_leaderboard()
+bettor_leaderboard
+```
+
+```{r}
+bettor_leaderboard %>% 
+  dplyr::group_by(bettor) %>% 
+  dplyr::summarize(score = sum(score))
+```
