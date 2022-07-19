@@ -4,17 +4,25 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(include = FALSE)
+knitr::opts_chunk$set(echo = FALSE)
 source("pool_bets.R")
 ```
 
-```{r echo=FALSE}
+```{r}
 bettor_leaderboard <- bettor_leaderboard()
-bettor_leaderboard
+saveRDS(bettor_leaderboard, "bettor_leaderboard.Rds")
+knitr::kable(bettor_leaderboard)
 ```
 
 ```{r}
 bettor_leaderboard %>% 
   dplyr::group_by(bettor) %>% 
-  dplyr::summarize(score = sum(score))
+  dplyr::summarize(score = sum(score)) %>% 
+  knitr::kable(format = "html")
+```
+
+```{r}
+espn_leaderboard <- get_espn_leaderboard()
+espn_leaderboard %>% knitr::kable()
+saveRDS(espn_leaderboard, "espn_leaderboard.Rds")
 ```

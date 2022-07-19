@@ -44,7 +44,6 @@ bettor_leaderboard <- function() {
     ) %>% 
     dplyr::mutate(score = as.numeric(score)) %>% 
     dplyr::select(-(tom:dad)) %>% 
-    dplyr::relocate(bettor) %>% 
-    dplyr::rename(delta = x_2)
+    dplyr::relocate(bettor)
 }  
 
