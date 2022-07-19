@@ -32,8 +32,7 @@ get_standings_division <- function(division, date = Sys.Date(), from = FALSE) {
   standings_on_date_bref(date = date, 
                          from = from, 
                          division = division) %>% 
-    extract2(1) %>% 
-    clean_names() %>% 
+    janitor::clean_names() %>% 
     as_tibble() %>% 
     mutate(division = division) -> result
   
