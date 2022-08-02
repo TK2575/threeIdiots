@@ -13,11 +13,11 @@ library(tidyverse)
 library(here)
 library(janitor)
 library(plotly)
+library(googlesheets4)
 source("R/standings.R")
 ```
 
 ```{r}
-
 team_abbreviation_map <-
   here::here("in", "team_abbrevation_map.csv") %>% 
   readr::read_csv() %>% 
@@ -55,16 +55,31 @@ projected_results <-
 ```
 
 ```{r}
-projected_results %>%
+player_pace <- 
+  projected_results %>%
   group_by(player) %>% 
   summarize(points = sum(points),
             pace_wp = sum(pace_wp),
             pace_pyth = sum(pace_pyth)) %>% 
-  arrange(points %>% desc) %>% 
-  write_csv(here("out", paste0("player_pace-", Sys.Date(), ".csv")))
+  arrange(points %>% desc)
 
-projected_results %>% 
+full_standings <- 
+  projected_results %>% 
   select(player, team, round, inverted, w, l, games_played, points, pace_wp, pace_pyth) %>% 
-  arrange(player, points %>% desc) %>% 
-  write_csv(here("out", paste0("full_standings-", Sys.Date(), ".csv")))
+  arrange(player, points %>% desc)
+
+player_pace %>% write_csv(here("out", paste0("player_pace-", Sys.Date(), ".csv")))
+full_standings %>% write_csv(here("out", paste0("full_standings-", Sys.Date(), ".csv")))
+```
+
+```{r}
+g4_auth_user <- readr::read_file(here::here("in", "g4_auth.txt"))
+google_sheet_url <- 
+  "https://docs.google.com/spreadsheets/d/1KPoJM1vvvkDfLdC6ourt9f98zcZYjTFngeAVgxYme3A/edit?usp=sharing"
+gs4_auth(g4_auth_user)
+
+player_pace %>% 
+  googlesheets4::write_sheet(google_sheet_url, sheet = "Midseason Tracking Summary")
+full_standings %>% 
+  googlesheets4::write_sheet(google_sheet_url, sheet = "Midseason Tracking Details")
 ```
