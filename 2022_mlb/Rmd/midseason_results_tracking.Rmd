@@ -32,6 +32,7 @@ picks <-
   select(-team_name)
 
 standings <- 
+  here::here("in","bref_boxes_20221006.html") %>% 
   get_standings() %>% 
   select(tm:w_l_percent, pyth_w_l_percent)
 
