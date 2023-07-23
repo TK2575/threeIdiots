@@ -1,0 +1,16 @@
+player,team,inverted
+Tom,Tampa Bay Rays,false
+Tom,Minnesota Twins,false
+Tom,Los Angeles Angels,false
+Tom,Cincinnati Reds,true
+Tom,San Diego Padres,false
+Will,Toronto Blue Jays,false
+Will,Cleveland Guardians,false
+Will,Houston Astros,false
+Will,St. Louis Cardinals,false
+Will,Colorado Rockies,true
+Dad,New York Yankees,false
+Dad,Kansas City Royals,true
+Dad,Seattle Mariners,false
+Dad,Milwaukee Brewers,false
+Dad,Los Angeles Dodgers,false
